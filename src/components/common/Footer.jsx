@@ -164,7 +164,10 @@ const Footer = () => {
         </button>
       </div>
       <div className="text-center mt-4">
-        <p className="text-sm">© 2024 Company Name. All rights reserved.</p>
+        <p className="text-sm">
+          © 2024 <span className="text-[var(--skin-color)]">MENTLINK</span> All
+          rights reserved.
+        </p>
       </div>
     </footer>
   );

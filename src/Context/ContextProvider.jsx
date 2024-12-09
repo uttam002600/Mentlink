@@ -66,6 +66,25 @@ const ContextProvider = ({ children }) => {
     return await getRecommendations(menteeId);
   };
 
+  // Dynamic filtering of content
+  const [collegeFilterConfig, setCollegeFilterConfig] = useState(null);
+
+  // Simulating an API call or loading the filter config
+  useEffect(() => {
+    // Fetch or set default config
+    const config = {
+      mentorType: true,
+      industryType: true,
+      specialization: true,
+      university: true,
+      feeRange: true,
+      ratings: true,
+      availability: true,
+    };
+
+    setCollegeFilterConfig(config); // Set the configuration after loading
+  }, []);
+
   return (
     <ApiContext.Provider
       value={{
@@ -79,6 +98,8 @@ const ContextProvider = ({ children }) => {
         getMentorRecommendations,
         theme,
         toggleTheme,
+        collegeFilterConfig,
+        setCollegeFilterConfig,
       }}
     >
       {children}
