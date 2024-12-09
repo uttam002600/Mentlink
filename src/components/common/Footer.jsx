@@ -1,155 +1,170 @@
-// Footer.js
+// src/components/Footer.jsx
+
 import React from "react";
-import { FaLinkedin, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-[var(--bg-black-900)] text-[var(--text-black-900)]">
-      {/* Footer Top Section */}
-      <div className="container mx-auto py-10 grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
-        {/* Column 1: About MentLink */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">About MentLink</h3>
-          <p className="mb-4">
-            MentLink is dedicated to connecting aspiring professionals with
-            seasoned mentors to foster growth and innovation.
-          </p>
-          <ul>
-            <li>
-              <a href="/about" className="hover:text-[var(--text-black-700)]">
-                About Us
-              </a>
-            </li>
-            <li>
-              <a href="/careers" className="hover:text-[var(--text-black-700)]">
-                Careers
-              </a>
-            </li>
-            <li>
-              <a href="/blog" className="hover:text-[var(--text-black-700)]">
-                Blog
-              </a>
-            </li>
-          </ul>
-        </div>
+    <footer className="bg-[var(--bg-black-100)] text-[var(--text-black-900)] py-8">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* About Section */}
+          <div>
+            <h5 className="text-lg font-bold mb-2">About Us</h5>
+            <p className="text-sm">
+              We are dedicated to connecting mentors and mentees for a better
+              learning experience.
+            </p>
+            <ul className="mt-4">
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Blog
+                </a>
+              </li>
+            </ul>
+          </div>
 
-        {/* Column 2: Resources */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">Resources</h3>
-          <ul>
-            <li>
-              <a href="/faqs" className="hover:text-[var(--text-black-700)]">
-                FAQs
-              </a>
-            </li>
-            <li>
-              <a href="/help" className="hover:text-[var(--text-black-700)]">
-                Help Center
-              </a>
-            </li>
-            <li>
-              <a href="/terms" className="hover:text-[var(--text-black-700)]">
-                Terms of Service
-              </a>
-            </li>
-            <li>
-              <a href="/privacy" className="hover:text-[var(--text-black-700)]">
-                Privacy Policy
-              </a>
-            </li>
-          </ul>
-        </div>
+          {/* Key Services Section */}
+          <div>
+            <h5 className="text-lg font-bold mb-2">Key Services</h5>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Find a Professor
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Personalized Recommendations
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Exclusive University Access
+                </a>
+              </li>
+            </ul>
+          </div>
 
-        {/* Column 3: Contact Us */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">Contact Us</h3>
-          <p>
-            Email:{" "}
-            <a
-              href="mailto:support@mentlink.com"
-              className="hover:text-[var(--text-black-700)]"
-            >
-              support@mentlink.com
-            </a>
-          </p>
-          <p>
-            Phone:{" "}
-            <a
-              href="tel:+18001234567"
-              className="hover:text-[var(--text-black-700)]"
-            >
-              +1-800-123-4567
-            </a>
-          </p>
-          <p>Address: 123 Professional Way, Silicon Valley, CA 94027</p>
-          <div className="flex space-x-4 mt-4">
-            <a href="#" className="hover:text-[var(--text-black-700)]">
-              <FaLinkedin size={20} />
-            </a>
-            <a href="#" className="hover:text-[var(--text-black-700)]">
-              <FaTwitter size={20} />
-            </a>
-            <a href="#" className="hover:text-[var(--text-black-700)]">
-              <FaFacebook size={20} />
-            </a>
-            <a href="#" className="hover:text-[var(--text-black-700)]">
-              <FaInstagram size={20} />
-            </a>
+          {/* Contact Us Section */}
+          <div>
+            <h5 className="text-lg font-bold mb-2">Contact Us</h5>
+            <p className="text-sm">
+              Email:{" "}
+              <a
+                href="mailto:info@example.com"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+              >
+                info@example.com
+              </a>
+            </p>
+            <p className="text-sm">Phone: +01 234 567 88</p>
+            <div className="flex space-x-4 mt-4">
+              <a
+                href="#"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+              >
+                <FaFacebook />
+              </a>
+              <a
+                href="#"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+              >
+                <FaTwitter />
+              </a>
+              <a
+                href="#"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+              >
+                <FaInstagram />
+              </a>
+              <a
+                href="#"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+              >
+                <FaLinkedin />
+              </a>
+            </div>
+          </div>
+
+          {/* Resources Section */}
+          <div>
+            <h5 className="text-lg font-bold mb-2">Resources</h5>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                >
+                  Terms of Service
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-
-        {/* Column 4: Mobile App */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">Mobile App</h3>
-          <p className="mb-4">Access MentLink on the go with our mobile app!</p>
-          <div className="flex space-x-4">
-            <a
-              href="#"
-              className="text-[var(--text-black-900)] text-xl bg-[var(--skin-color)] py-2 px-4 rounded hover:bg-[var(--text-black-700)]"
-            >
-              App Store
-            </a>
-            <a
-              href="#"
-              className="text-[var(--text-black-900)] text-xl bg-[var(--skin-color)] py-2 px-4 rounded hover:bg-[var(--text-black-700)]"
-            >
-              Google Play
-            </a>
-          </div>
-          {/* Optional QR Code */}
-          {/* <img src="path_to_qr_code.png" alt="QR Code" className="mt-4" /> */}
-        </div>
       </div>
-
-      {/* Footer Middle Section */}
-      <div className="bg-[var(--bg-black-100)] py-6 text-center">
-        <h2 className="text-[var(--text-black-700)] text-lg font -bold mb-4">
-          Are you ready to start your mentorship journey?
-        </h2>
-        <div className="flex justify-center space-x-4">
-          <button className="text-[var(--text-black-900)] text-xl bg-[var(--skin-color)] py-2 px-4 rounded hover:bg-[var(--text-black-700)]">
-            Become a Mentor
-          </button>
-          <button className="text-[var(--text-black-900)] text-xl bg-[var(--skin-color)] py-2 px-4 rounded hover:bg-[var(--text-black-700)]">
-            Find a Mentor
-          </button>
-        </div>
+      <div className="text-center mt-8">
+        <button className="bg-[var(--skin-color)] text-white px-4 py-2 rounded hover:bg-opacity-80 hover:bg-purple-600">
+          Become a Mentor
+        </button>
+        <button className="bg-[var(--skin-color)] text-white px-4 py-2 rounded hover:bg-opacity-80 ml-4 hover:bg-purple-600">
+          Find a Mentor
+        </button>
       </div>
-
-      {/* Footer Bottom Section */}
-      <div className="bg-[var(--bg-black-900)] text-[var(--text-black-100)] py-4 flex justify-between items-center px-4">
-        <p>© 2024 MentLink. All rights reserved.</p>
-        <div className="space-x-4">
-          <a href="/terms" className="hover:text-[var(--text-black-700)]">
-            Terms & Conditions
-          </a>
-          <a href="/privacy" className="hover:text-[var(--text-black-700)]">
-            Privacy Policy
-          </a>
-          <a href="/cookies" className="hover:text-[var(--text-black-700)]">
-            Cookie Settings
-          </a>
-        </div>
+      <div className="text-center mt-4">
+        <p className="text-sm">© 2024 Company Name. All rights reserved.</p>
       </div>
     </footer>
   );

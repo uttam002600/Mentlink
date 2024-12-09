@@ -4,14 +4,14 @@ import "./index.css";
 import Navbar from "./components/common/Navbar";
 import AuthPage from "./pages/AuthPage";
 import Footer from "./components/common/Footer";
-import Home from "./pages/Home";
+import Global from "./pages/Global";
 
 const App = () => {
   return (
     <>
       <Navbar />
-      <AuthPage />
-      {/* <Home /> */}
+      {/* <AuthPage /> */}
+      <Global />
       <Footer />
     </>
   );

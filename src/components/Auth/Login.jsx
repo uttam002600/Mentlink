@@ -18,7 +18,7 @@ const Login = ({ setAuthPage }) => {
   };
 
   return (
-    <div className="bg-[var(--bg-black-100)] flex items-center justify-center min-h-screen">
+    <div className="bg-[var(--bg-black-100)] flex items-center justify-center min-h-screen z-0">
       <div className="bg-[var(--bg-black-50)] rounded-lg shadow-lg p-8 w-full max-w-md">
         <h2 className="text-[var(--text-black-900)] text-2xl font-bold text-center mb-6">
           Login

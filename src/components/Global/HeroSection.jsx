@@ -75,28 +75,12 @@ const HeroSection = () => {
         <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
           <button
             onClick={nextImage}
-            class="bg-white text-black p-2 rounded-full shadow-md hover:bg-[var(--bg-black-50)] transition duration-300"
+            className="bg-white text-black p-2 rounded-full shadow-md hover:bg-[var(--bg-black-50)] transition duration-300"
           >
             &gt;
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .h-screen {
-            height: auto; /* Adjust height for smaller devices */
-          }
-          .p-10 {
-            padding: 5%; /* Adjust padding for smaller devices */
-          }
-        }
-        @media (min-width: 100px) and (max-width: 760px) {
-          .hero {
-            flex-direction: column;
-          }
-        }
-      `}</style>
     </div>
   );
 };
