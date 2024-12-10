@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
 import "./index.css";
 import Navbar from "./components/common/Navbar";
@@ -11,9 +12,12 @@ const App = () => {
   return (
     <>
       <Navbar />
-      {/* <College /> */}
-      {/* <AuthPage /> */}
-      <Global />
+      <Routes>
+        <Route path="/" element={<College />} />
+        <Route path="*" element={<College />} />
+        <Route path="/global" element={<Global />} />
+        <Route path="/auth" element={<AuthPage />} />
+      </Routes>
       <Footer />
     </>
   );

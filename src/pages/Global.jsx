@@ -5,7 +5,7 @@ import RecommendedMentors from "../components/Global/RecommendedMentors";
 import Testimonials from "../components/Global/Testimonials";
 import AboutUs from "../components/Global/AboutUs";
 import { ApiContext } from "../Context/ContextProvider";
-import FilterComponent from "../components/College/FilterComponent";
+import FilterComponent from "../components/common/FilterComponent";
 
 const Global = () => {
   //Filter Component

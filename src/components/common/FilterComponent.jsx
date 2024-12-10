@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 const FilterComponent = ({ config, onApply, onReset }) => {
   const [filters, setFilters] = useState({});
@@ -39,6 +40,9 @@ const FilterComponent = ({ config, onApply, onReset }) => {
             <path d="M3.646 4.646a.5.5 0 0 1 .708 0L8 7.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708z" />
           </svg>
         </button>
+
+        {/* Rightmost part: Theme Toggle */}
+        <ThemeToggle />
       </div>
 
       {/* Filter Section (Collapsible) */}
