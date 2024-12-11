@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import FilterComponent from "../components/common/FilterComponent";
 import { ApiContext } from "../Context/ContextProvider";
 import Carousel from "../components/College/Carousal";
+import MentorGrid from "../components/College/MentorGrid";
 
 const College = () => {
   // Filter Component
@@ -57,6 +58,7 @@ const College = () => {
         onReset={handleResetFilters}
       />
       <Carousel slides={slides} />
+      <MentorGrid />
     </>
   );
 };

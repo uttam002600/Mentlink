@@ -1,13 +1,19 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MdManageAccounts } from "react-icons/md";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Simulated authentication state
+  const location = useLocation(); // Get the current location
 
   const toggleDropdown = () => setIsOpen(!isOpen);
+
+  // Auto-close the mobile menu on navigation
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   const navLinks = [
     {
@@ -55,6 +61,19 @@ const Navbar = () => {
     },
   ];
 
+  const isActive = (path) => {
+    // Check if the current path matches the link or its dropdown
+    return (
+      location.pathname === path ||
+      navLinks.some((link) =>
+        link.dropdown.some(
+          (sub) =>
+            sub.path === path && location.pathname.startsWith(link.label.path)
+        )
+      )
+    );
+  };
+
   return (
     <nav className="bg-[var(--bg-black-100)] sticky top-0 shadow-md z-10">
       <div className="flex justify-between items-center p-4">
@@ -82,7 +101,11 @@ const Navbar = () => {
           {navLinks.map((link, index) => (
             <div key={index} className="relative group">
               <Link to={link.label.path}>
-                <button className="text-[var(--text-black-900)] hover:text-[var(--skin-color)]">
+                <button
+                  className={`text-[var(--text-black-900)] hover:text-[var(--skin-color)] ${
+                    isActive(link.label.path) ? "text-[var(--skin-color)]" : ""
+                  }`}
+                >
                   {link.label.name}
                 </button>
               </Link>
@@ -164,25 +187,6 @@ const Navbar = () => {
               </div>
             </div>
           ))}
-          <div className="p-4">
-            {isAuthenticated ? (
-              <div>
-                <Link
-                  to="/dashboard"
-                  className="block w-full text-left text-[var(--text-black-900)] hover:text-[var(--skin-color)]"
-                >
-                  Account
-                </Link>
-              </div>
-            ) : (
-              <Link
-                to="/auth"
-                className="bg-[var(--skin-color)] text-white w-full px-4 py-2 rounded-md"
-              >
-                Login / Register
-              </Link>
-            )}
-          </div>
         </div>
       )}
     </nav>
