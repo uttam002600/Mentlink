@@ -1,51 +1,80 @@
-// Card Component
 import React from "react";
 
 const MentorCard = ({ mentor }) => {
   return (
-    <div className="bg-[var(--bg-black-100)] text-[var(--text-black-900)] rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
-      {/* Profile Image */}
+    <div className="bg-[var(--bg-black-100)] shadow-md rounded-lg p-4 max-w-sm mx-auto">
+      {/* Mentor Image */}
       <div className="flex items-center space-x-4">
         <img
-          src={mentor.image}
+          src={mentor.photo}
           alt={mentor.name}
           className="w-16 h-16 rounded-full border-2 border-[var(--skin-color)]"
         />
         <div>
-          <h3 className="font-bold text-lg">{mentor.name}</h3>
-          <p className="text-[var(--text-black-700)] text-sm">{mentor.role}</p>
+          {/* Name and Designation */}
+          <h2 className="text-[var(--text-black-900)] text-lg font-semibold">
+            {mentor.name}
+          </h2>
+          <p className="text-[var(--text-black-700)] text-sm">
+            {mentor.designation}
+          </p>
         </div>
       </div>
 
-      {/* Details */}
+      {/* Organization & University */}
       <div className="mt-4">
-        <p className="text-[var(--text-black-700)] text-sm">
-          <span className="font-medium">Experience:</span> {mentor.experience}{" "}
-          years
+        <p className="text-[var(--text-black-900)] text-sm">
+          <span className="font-bold">Organization:</span> {mentor.organization}
         </p>
-        <p className="text-[var(--text-black-700)] text-sm">
-          <span className="font-medium">Expertise:</span>{" "}
-          {mentor.expertise.join(", ")}
-        </p>
-        <p className="text-[var(--text-black-700)] text-sm">
-          <span className="font-medium">Organisation:</span>{" "}
-          {mentor.organisation}
-        </p>
-        <p className="text-[var(--text-black-700)] text-sm">
-          <span className="font-medium">Fee:</span> ${mentor.fee}/hr
+        <p className="text-[var(--text-black-900)] text-sm">
+          <span className="font-bold">University:</span> {mentor.university}
         </p>
       </div>
 
-      {/* Footer Section */}
-      <div className="mt-4 flex justify-between items-center">
-        <p className="flex items-center text-[var(--text-black-700)]">
-          <span className="text-[var(--skin-color)] font-medium">
-            {mentor.rating}★
-          </span>
-          <span className="ml-2 text-sm">({mentor.reviews} reviews)</span>
+      {/* Expertise */}
+      <div className="mt-4">
+        <h3 className="text-[var(--text-black-900)] font-bold text-sm">
+          Expertise:
+        </h3>
+        <ul className="flex flex-wrap gap-2 mt-1">
+          {mentor.expertise.map((skill, index) => (
+            <li
+              key={index}
+              className="bg-[var(--bg-black-50)] text-[var(--text-black-900)] text-xs px-2 py-1 rounded-md"
+            >
+              {skill}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Batch (Optional) */}
+      {mentor.batch && (
+        <div className="mt-4">
+          <p className="text-[var(--text-black-900)] text-sm">
+            <span className="font-bold">Batch:</span> {mentor.batch}
+          </p>
+        </div>
+      )}
+
+      {/* Rating */}
+      <div className="mt-4 flex items-center">
+        <p className="text-[var(--text-black-900)] text-sm font-bold">
+          Rating: {mentor.rating}
         </p>
-        <button className="bg-[var(--skin-color)] text-white py-1 px-3 rounded-lg hover:bg-[var(--text-black-700)] transition-colors duration-300">
-          View Profile
+        <div className="ml-2 flex">
+          {Array.from({ length: Math.round(mentor.rating) }, (_, i) => (
+            <span key={i} className="text-[var(--skin-color)] text-sm mr-1">
+              ★
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA Button */}
+      <div className="mt-4">
+        <button className="bg-[var(--skin-color)] text-white text-sm px-4 py-2 rounded-md hover:bg-red-600 transition">
+          Connect
         </button>
       </div>
     </div>
