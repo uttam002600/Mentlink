@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ThemeToggle from "./ThemeToggle";
 
 const FilterComponent = ({ config, onApply, onReset }) => {
   const [filters, setFilters] = useState({});
@@ -41,8 +40,7 @@ const FilterComponent = ({ config, onApply, onReset }) => {
           </svg>
         </button>
 
-        {/* Rightmost part: Theme Toggle */}
-        <ThemeToggle />
+        {/* Rightmost part: Filter */}
       </div>
 
       {/* Filter Section (Collapsible) */}

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MdManageAccounts } from "react-icons/md";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,42 +126,46 @@ const Navbar = () => {
         </div>
 
         {/* Account/Login Section */}
-        <div>
-          {isAuthenticated ? (
-            <div className="relative group">
-              <button className="text-[var(--text-black-900)] hover:text-[var(--skin-color)] flex items-center gap-2 justify-center">
-                <MdManageAccounts />
-                <span>Account</span>
-              </button>
-              <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0">
-                <Link
-                  to="/dashboard"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/settings"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </Link>
-                <Link
-                  to="/logout"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Logout
-                </Link>
+        <div className="flex justify-center items-center">
+          <ThemeToggle />
+          <div className="ml-2">
+            {isAuthenticated ? (
+              <div className="relative group">
+                <button className="text-[var(--text-black-900)] hover:text-[var(--skin-color)] flex items-center gap-2 justify-center">
+                  <MdManageAccounts />
+                  <span>Account</span>
+                </button>
+                <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0">
+                  <Link
+                    to="/dashboard"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Settings
+                  </Link>
+                  <Link
+                    to="/logout"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </Link>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Link
-              to="/auth"
-              className="bg-[var(--skin-color)] text-white px-4 py-2 rounded-md hover:bg-purple-600"
-            >
-              Login / Register
-            </Link>
-          )}
+            ) : (
+              <Link
+                to="/auth"
+                className="bg-[var(--skin-color)] text-white px-4 py-2 rounded-md hover:bg-purple-600 flex items-center justify-center min-w-[80px] min-h-[40px]"
+              >
+                <span className="block lg:hidden">SignUp</span>
+                <span className="hidden lg:block">Login / Register</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
@@ -170,7 +175,7 @@ const Navbar = () => {
           {navLinks.map((link, index) => (
             <div key={index} className="relative">
               <Link to={link.label.path}>
-                <button className="block w-full text-left px-4 py-2 text-[var(--text-black-900)] hover:text-[var(--skin-color)]">
+                <button className="block w-full text-left px-4 py-2 text-black hover:text-[var(--skin-color)]">
                   {link.label.name}
                 </button>
               </Link>
