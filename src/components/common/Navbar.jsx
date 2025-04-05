@@ -10,7 +10,7 @@ const Navbar = () => {
 
   const location = useLocation(); // Get the current location
 
-  const { isAuthenticated } = useContext(ApiContext);
+  const { isAuthenticated, authUser, handleLogOut } = useContext(ApiContext);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -86,7 +86,7 @@ const Navbar = () => {
           to="/"
           className="text-[var(--skin-color)] font-bold text-xl cursor-pointer"
         >
-          MENTLINK
+          MENTPAT
         </Link>
 
         {/* Mobile Hamburger Menu */}
@@ -138,31 +138,31 @@ const Navbar = () => {
                   <MdManageAccounts />
                   <span>Account</span>
                 </button>
-                <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0">
+                <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-2 min-w-[180px] border border-gray-200 z-20">
                   <Link
                     to="/update-profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     Update Profile
                   </Link>
                   <Link
                     to="/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     Dashboard
                   </Link>
                   <Link
                     to="/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     Settings
                   </Link>
-                  <Link
-                    to="/logout"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  <button
+                    onClick={handleLogOut}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 transition-colors"
                   >
                     Log Out
-                  </Link>
+                  </button>
                 </div>
               </div>
             ) : (

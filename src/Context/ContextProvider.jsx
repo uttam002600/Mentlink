@@ -111,6 +111,24 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  const handleLogOut = async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+
+      // Clear frontend user state
+      setAuthUser(null);
+      setIsAuthenticated(false);
+
+      // Optional: Redirect to login page
+      navigate("/login");
+
+      toast.success("You have been logged out successfully.");
+    } catch (error) {
+      console.error("Logout Error:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
+
   const getMentorRecommendations = async (menteeId) => {
     return await getRecommendations(menteeId);
   };
@@ -148,6 +166,7 @@ const ContextProvider = ({ children }) => {
         loadMentors,
         loadMentees,
         handleLogin,
+        handleLogOut,
         handleRegister,
         getMentorRecommendations,
         theme,
