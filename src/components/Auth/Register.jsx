@@ -1,596 +1,310 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { ApiContext } from "../../Context/ContextProvider";
+import { axiosInstance } from "../../utils/axios";
+import { toast } from "react-hot-toast";
 
 const Register = ({ setAuthPage }) => {
-  const [role, setRole] = useState("Mentor (Professor)");
   const [formData, setFormData] = useState({
     fullName: "",
+    role: "",
     email: "",
+    college: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
-    profilePicture: null,
-    college: "",
-    department: "",
-    subjects: [],
-    yearsOfExperience: "",
-    availableTimeslots: [],
-    linkedIn: "",
-    certifications: null,
-    programOfStudy: "",
-    yearOfStudy: "",
-    purpose: "",
-    interestAreas: [],
-    mentorshipType: "",
-    industryExpertise: [],
-    topSkills: [],
-    portfolio: "",
-    hourlyFee: "",
-    adminType: "",
-    institutionName: "",
-    privileges: "",
-    securityKey: "",
+    username: "", // New username field
+    otp: "", // New OTP field
   });
 
-  const [selectedCollege, setSelectedCollege] = useState("NONE");
+  const { handleRegister, registerLoading } = useContext(ApiContext);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState(""); // To hold username availability status
+  const [otpSent, setOtpSent] = useState(false); // To track if OTP has been sent
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Check username availability
+    if (name === "username") {
+      checkUsernameAvailability(value);
     }
   };
 
-  const handleRoleChange = (e) => {
-    setRole(e.target.value);
+  const checkUsernameAvailability = async (username) => {
+    if (!username.trim()) {
+      setUsernameStatus("");
+      return;
+    }
+
+    try {
+      const { data } = await axiosInstance.get(`/auth/check-username`, {
+        params: { username },
+      });
+
+      setUsernameStatus(data.available ? "Accepted" : "Already Exists");
+    } catch (error) {
+      console.error("Error checking username:", error);
+      setUsernameStatus("Error");
+    }
   };
 
-  const handleCollegeChange = (e) => {
-    const value = e.target.value;
-    setSelectedCollege(value);
-    setFormData({ ...formData, college: value });
+  const handleGenerateOtp = async () => {
+    if (!formData.email) {
+      toast.error("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post("/auth/send-otp", {
+        email: formData.email,
+      });
+
+      if (response.data.status === "success") {
+        setOtpSent(true);
+        toast.success("OTP sent to your email!");
+      } else {
+        toast.error("Failed to send OTP.");
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
+      console.error("Registration Error:", errorMessage);
+      toast.error(errorMessage);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    handleRegister(formData);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-black-900)] p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-[var(--bg-black-100)] p-6 rounded-lg shadow-lg w-full max-w-lg"
-      >
-        <h2 className="text-2xl font-bold text-[var(--skin-color)] mb-4">
+      <div className="bg-[var(--bg-black-100)] rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-[var(--text-black-900)] mb-6 text-center">
           Register
         </h2>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Select Role
-          </label>
-          <select
-            name="role"
-            value={role}
-            onChange={handleRoleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
+        <p className="text-center mb-4">
+          Already a user?{" "}
+          <a
+            href="#"
+            onClick={() => {
+              setAuthPage("login");
+            }}
+            className="text-[var(--skin-color)]"
           >
-            <option value="Mentor (Professor)">Mentor (Professor)</option>
-            <option value="Mentee (User)">Mentee (User )</option>
-            <option value="Mentor (Global)">Mentor (Global)</option>
-            <option value="Admin">Admin</option>
-          </select>
-        </div>
+            Login
+          </a>
+        </p>
+        <form onSubmit={handleSubmit}>
+          {/* Fullname Field */}
+          <div className="mb-4">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="fullname"
+            >
+              Fullname
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            />
+          </div>
 
-        {/* Common Fields */}
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Full Name
-          </label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black- 900)] rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Phone Number (optional)
-          </label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[var(--text-black-700)] mb-1">
-            Profile Picture (optional)
-          </label>
-          <input
-            type="file"
-            name="profilePicture"
-            onChange={handleChange}
-            className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-          />
-        </div>
-
-        {role === "Mentor (Professor)" && (
-          <>
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                College/University Name
-              </label>
-              <input
-                type="text"
-                name="college"
-                value={formData.college}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Department
-              </label>
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
+          {/* Username Field */}
+          <div className="mb-4">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="username"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            />
+            {usernameStatus && (
+              <p
+                className={`text-sm ${
+                  usernameStatus === "Accepted"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
               >
-                <option value="">Select Department</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Business">Business</option>
-                <option value="Medicine">Medicine</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Subjects of Expertise
-              </label>
-              <input
-                type="text"
-                name="subjects"
-                value={formData.subjects.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    subjects: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Machine Learning, Calculus"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Years of Teaching Experience
-              </label>
-              <input
-                type="number"
-                name="yearsOfExperience"
-                value={formData.yearsOfExperience}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Available Timeslots
-              </label>
-              <input
-                type="text"
-                name="availableTimeslots"
-                value={formData.availableTimeslots.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    availableTimeslots: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Monday 9 AM - 11 AM"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                LinkedIn Profile
-              </label>
-              <input
-                type="url"
-                name="linkedIn"
-                value={formData.linkedIn}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Professional Certifications
-              </label>
-              <input
-                type="file"
-                name="certifications"
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-          </>
-        )}
-
-        {role === "Mentee (User)" && (
-          <>
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                College/University Name
-              </label>
-              <select
-                name="college"
-                value={selectedCollege}
-                onChange={handleCollegeChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              >
-                <option value="NONE">NONE</option>
-                <option value="MIT">MIT</option>
-                <option value="Oxford">Oxford</option>
-                <option value="Harvard">Harvard</option>
-              </select>
-            </div>
-
-            {selectedCollege !== "NONE" && (
-              <>
-                <div className="mb-4">
-                  <label className="block text-[var(--text-black-700)] mb-1">
-                    Program of Study
-                  </label>
-                  <input
-                    type="text"
-                    name="programOfStudy"
-                    value={formData.programOfStudy}
-                    onChange={handleChange}
-                    className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-[var(--text-black-700)] mb-1">
-                    Year of Study
-                  </label>
-                  <select
-                    name="yearOfStudy"
-                    value={formData.yearOfStudy}
-                    onChange={handleChange}
-                    className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                  >
-                    <option value="">Select Year</option>
-                    <option value="First Year">First Year</option>
-                    <option value="Second Year">Second Year</option>
-                    <option value="Third Year">Third Year</option>
-                    <option value="Fourth Year">Fourth Year</option>
-                  </select>
-                </div>
-              </>
+                {usernameStatus}
+              </p>
             )}
+          </div>
 
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Purpose of Mentorship
-              </label>
-              <textarea
-                name="purpose"
-                value={formData.purpose}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Looking for career guidance in AI"
-              ></textarea>
-            </div>
+          {/* Role Field */}
+          <div className="mb-4">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="role"
+            >
+              Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            >
+              <option value="" disabled>
+                Select your role
+              </option>
+              <option value="MENTOR">Mentor</option>
+              <option value="MENTEE">Mentee</option>
+            </select>
+          </div>
 
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Interest Areas
-              </label>
-              <input
-                type="text"
-                name="interestAreas"
-                value={formData.interestAreas.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    interestAreas: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Finance, Machine Learning"
-              />
-            </div>
+          {/* Email Field */}
+          <div className="mb-4 relative">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleGenerateOtp}
+              className="absolute right-2 top-2 bg-[var(--skin-color)] text-white py-1 px-2 rounded"
+            >
+              Generate OTP
+            </button>
+          </div>
 
+          {/* OTP Field */}
+          {otpSent && (
             <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Preferred Mentorship Type
-              </label>
-              <select
-                name="mentorshipType"
-                value={formData.mentorshipType}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black -900)] rounded"
+              <label
+                className="block text-[var(--text-black-700)] mb-2"
+                htmlFor="otp"
               >
-                <option value="">Select Type</option>
-                <option value="One-on-One">One-on-One</option>
-                <option value="Group Sessions">Group Sessions</option>
-                <option value="Workshops">Workshops</option>
-              </select>
-            </div>
-          </>
-        )}
-
-        {role === "Mentor (Global)" && (
-          <>
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Industry Expertise
-              </label>
-              <input
-                type="text"
-                name="industryExpertise"
-                value={formData.industryExpertise.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    industryExpertise: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Software Development, Product Management"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Years of Professional Experience
+                OTP
               </label>
               <input
                 type="number"
-                name="yearsOfExperience"
-                value={formData.yearsOfExperience}
+                id="otp"
+                name="otp"
+                value={formData.otp}
                 onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Top Skills
-              </label>
-              <input
-                type="text"
-                name="topSkills"
-                value={formData.topSkills.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    topSkills: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., JavaScript, Agile Development"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Portfolio/Website
-              </label>
-              <input
-                type="url"
-                name="portfolio"
-                value={formData.portfolio}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Hourly Fee
-              </label>
-              <input
-                type="number"
-                name="hourlyFee"
-                value={formData.hourlyFee}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="$50/hour"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Available Timeslots
-              </label>
-              <input
-                type="text"
-                name="availableTimeslots"
-                value={formData.availableTimeslots.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    availableTimeslots: e.target.value.split(", "),
-                  })
-                }
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="e.g., Monday 9 AM - 11 AM"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                LinkedIn Profile
-              </label>
-              <input
-                type="url"
-                name="linkedIn"
-                value={formData.linkedIn}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Professional Certifications
-              </label>
-              <input
-                type="file"
-                name="certifications"
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              />
-            </div>
-          </>
-        )}
-
-        {role === "Admin" && (
-          <>
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Admin Type
-              </label>
-              <select
-                name="adminType"
-                value={formData.adminType}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-              >
-                <option value="">Select Admin Type</option>
-                <option value="Super Admin">Super Admin</option>
-                <option value="Institution Admin">Institution Admin</option>
-              </select>
-            </div>
-
-            {formData.adminType === "Institution Admin" && (
-              <div className="mb-4">
-                <label className="block text-[var(--text-black-700)] mb-1">
-                  Institution Name
-                </label>
-                <input
-                  type="text"
-                  name="institutionName"
-                  value={formData.institutionName}
-                  onChange={handleChange}
-                  className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                />
-              </div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Privileges Description
-              </label>
-              <textarea
-                name="privileges"
-                value={formData.privileges}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
-                placeholder="Optional"
-              ></textarea>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--text-black-700)] mb-1">
-                Security Key/Code
-              </label>
-              <input
-                type="text"
-                name="securityKey"
-                value={formData.securityKey}
-                onChange={handleChange}
-                className="w-full p-2 border bg-[var(--bg-black-50)] text-[var(--text-black-900)] rounded"
+                className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
                 required
               />
             </div>
-          </>
-        )}
+          )}
 
-        <button
-          type="submit"
-          className="w-full bg-[var(--skin-color)] text-white p-2 rounded hover:bg-purple-600 transition duration-200"
-        >
-          Register
-        </button>
-        <div className="mt-4 text-center">
-          <p className="text-[var(--text-black-700)]">
-            Already have account{" "}
-            <a
-              href="#"
-              className="text-[var(--skin-color)] hover:underline"
-              onClick={() => {
-                setAuthPage("login");
-              }}
+          {/* College Field */}
+          <div className="mb-4">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="college"
             >
-              Login
-            </a>
-          </p>
-        </div>
-      </form>
+              College
+            </label>
+            <select
+              id="college"
+              name="college"
+              value={formData.college}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            >
+              <option value="" disabled>
+                Select your college
+              </option>
+              <option value="college1">College 1</option>
+              <option value="college2">College 2</option>
+              <option value="college3">College 3</option>
+            </select>
+          </div>
+
+          {/* Password Field */}
+          <div className="mb-4 relative">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-2 text-[var(--skin-color)]"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {/* Confirm Password Field */}
+          <div className="mb-6 relative">
+            <label
+              className="block text-[var(--text-black-700)] mb-2"
+              htmlFor="confirmPassword"
+            >
+              Confirm Password
+            </label>
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-2 top-2 text-[var(--skin-color)]"
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            disabled={registerLoading}
+            className="w-full bg-[var(--skin-color)] text-white py-2 rounded hover:bg-opacity-80 transition duration-200 mb-4"
+          >
+            Register
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

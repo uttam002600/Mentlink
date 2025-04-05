@@ -3,11 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MdManageAccounts } from "react-icons/md";
 import ThemeToggle from "./ThemeToggle";
+import { ApiContext } from "../../Context/ContextProvider";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Simulated authentication state
+
   const location = useLocation(); // Get the current location
+
+  const { isAuthenticated } = useContext(ApiContext);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -137,6 +140,12 @@ const Navbar = () => {
                 </button>
                 <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0">
                   <Link
+                    to="/update-profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Update Profile
+                  </Link>
+                  <Link
                     to="/dashboard"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -152,7 +161,7 @@ const Navbar = () => {
                     to="/logout"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Logout
+                    Log Out
                   </Link>
                 </div>
               </div>

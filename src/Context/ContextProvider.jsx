@@ -7,9 +7,14 @@ import React, { createContext, useEffect, useState } from "react";
 //   getRecommendations,
 // } from "../services/api";
 
+import { axiosInstance } from "../utils/axios.js";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 export const ApiContext = createContext();
 
 const ContextProvider = ({ children }) => {
+  const navigate = useNavigate();
   //Logic for Theme Toggle
   const [theme, setTheme] = useState("light"); // Default to light mode
 
@@ -40,6 +45,12 @@ const ContextProvider = ({ children }) => {
   const [mentors, setMentors] = useState([]);
   const [mentees, setMentees] = useState([]);
   const [authUser, setAuthUser] = useState(null);
+  const [authPage, setAuthPage] = useState("login");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  //Loading state
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Methods for fetching data
   const loadMentors = async () => {
@@ -52,14 +63,52 @@ const ContextProvider = ({ children }) => {
     setMentees(data);
   };
 
-  const handleLogin = async (credentials) => {
-    const user = await login(credentials);
-    setAuthUser(user);
+  const handleLogin = async (formData) => {
+    try {
+      setLoginLoading(true);
+
+      // 🔹 Call the login API
+      const response = await axiosInstance.post("/auth/login", formData);
+
+      const { user } = response.data.data;
+
+      // 🔹 Update global auth context
+      setAuthUser(user);
+      setIsAuthenticated(true);
+      console.log(user);
+
+      toast.success("Login successful!");
+      navigate("/");
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
+      console.error("Login Error:", errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
-  const handleRegister = async (details) => {
-    const user = await register(details);
-    setAuthUser(user);
+  const handleRegister = async (formData) => {
+    if (registerLoading) {
+      return;
+    }
+    setRegisterLoading(true);
+    try {
+      const user = await axiosInstance.post("/auth/register", formData);
+
+      toast.success("Your account has been created successfully");
+      setAuthPage("login");
+
+      navigate("/auth");
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong!";
+      console.error("Registration Error:", errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setRegisterLoading(false);
+    }
   };
 
   const getMentorRecommendations = async (menteeId) => {
@@ -91,6 +140,11 @@ const ContextProvider = ({ children }) => {
         mentors,
         mentees,
         authUser,
+        registerLoading,
+        loginLoading,
+        isAuthenticated,
+        authPage,
+        setAuthPage,
         loadMentors,
         loadMentees,
         handleLogin,
