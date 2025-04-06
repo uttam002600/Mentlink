@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-hot-toast";
 import { axiosInstance } from "../utils/axios";
+import { ApiContext } from "../Context/ContextProvider";
 
-const UpdateProfile = ({ user }) => {
+const UpdateProfile = () => {
+  const { authUser: user } = useContext(ApiContext);
+
   const [formData, setFormData] = useState({
     fullName: user.fullName || "",
     username: user.username || "",

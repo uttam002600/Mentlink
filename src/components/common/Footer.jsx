@@ -83,12 +83,12 @@ const Footer = () => {
                 href="mailto:info@example.com"
                 className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
               >
-                info@example.com
+                uttam002600@gmail.com
               </a>
             </p>
-            <p className="text-sm">Phone: +01 234 567 88</p>
+            <p className="text-sm">Phone: +91 9696724330</p>
             <div className="flex space-x-4 mt-4">
-              <a
+              {/* <a
                 href="#"
                 className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
               >
@@ -105,10 +105,10 @@ const Footer = () => {
                 className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
               >
                 <FaInstagram />
-              </a>
+              </a> */}
               <a
-                href="#"
-                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)]"
+                href="https://www.linkedin.com/in/uttam-upadhyay-a88780257/"
+                className="text-[var(--text-black-700)] hover:text-[var(--skin-color)] text-lg"
               >
                 <FaLinkedin />
               </a>
@@ -165,7 +165,7 @@ const Footer = () => {
       </div>
       <div className="text-center mt-4">
         <p className="text-sm">
-          © 2024 <span className="text-[var(--skin-color)]">MENTLINK</span> All
+          © 2024 <span className="text-[var(--skin-color)]">MENTPAT</span> All
           rights reserved.
         </p>
       </div>

@@ -7,10 +7,8 @@ import { ApiContext } from "../../Context/ContextProvider";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
   const location = useLocation(); // Get the current location
-
-  const { isAuthenticated, authUser, handleLogOut } = useContext(ApiContext);
+  const { isAuthenticated, handleLogOut } = useContext(ApiContext);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -19,63 +17,15 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location]);
 
+  // Define the simplified nav links
   const navLinks = [
-    {
-      label: { name: "College", path: "/" },
-      dropdown: [
-        { name: "Connect with Professors", path: "/college/connect" },
-        {
-          name: "Personalized Recommendations",
-          path: "/college/recommendations",
-        },
-        { name: "College-Specific Forums", path: "/college/forums" },
-        { name: "Student-Mentor Connections", path: "/college/mentors" },
-        { name: "Tie-Up Benefits", path: "/college/benefits" },
-      ],
-    },
-    {
-      label: { name: "Collaboration", path: "/collaboration" },
-      dropdown: [
-        { name: "Partnered Institutions", path: "/collaboration/partners" },
-        {
-          name: "Cross-Institution Opportunities",
-          path: "/collaboration/opportunities",
-        },
-        { name: "Exclusive Programs", path: "/collaboration/programs" },
-        { name: "Request Tie-Up", path: "/collaboration/request" },
-      ],
-    },
-    {
-      label: { name: "Global", path: "/global" },
-      dropdown: [
-        { name: "Global Mentors", path: "/global/mentors" },
-        { name: "Find by Domain", path: "/global/domain" },
-        { name: "Fee-Based Mentorship", path: "/global/fee-based" },
-        { name: "Featured Mentors", path: "/global/featured" },
-      ],
-    },
-    {
-      label: { name: "About Us", path: "/about" },
-      dropdown: [
-        { name: "Our Mission", path: "/about/mission" },
-        { name: "Success Stories", path: "/about/stories" },
-        { name: "Team", path: "/about/team" },
-        { name: "Contact Us", path: "/about/contact" },
-      ],
-    },
+    { name: "College", path: "/" },
+    { name: "Collaboration", path: "/collaboration" },
+    { name: "About Us", path: "/about" },
   ];
 
   const isActive = (path) => {
-    // Check if the current path matches the link or its dropdown
-    return (
-      location.pathname === path ||
-      navLinks.some((link) =>
-        link.dropdown.some(
-          (sub) =>
-            sub.path === path && location.pathname.startsWith(link.label.path)
-        )
-      )
-    );
+    return location.pathname === path;
   };
 
   return (
@@ -103,28 +53,15 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-4">
           {navLinks.map((link, index) => (
-            <div key={index} className="relative group">
-              <Link to={link.label.path}>
-                <button
-                  className={`text-[var(--text-black-900)] hover:text-[var(--skin-color)] ${
-                    isActive(link.label.path) ? "text-[var(--skin-color)]" : ""
-                  }`}
-                >
-                  {link.label.name}
-                </button>
-              </Link>
-              <div className="absolute left-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0">
-                {link.dropdown.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    to={item.path}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <Link key={index} to={link.path}>
+              <button
+                className={`text-[var(--text-black-900)] hover:text-[var(--skin-color)] ${
+                  isActive(link.path) ? "text-[var(--skin-color)]" : ""
+                }`}
+              >
+                {link.name}
+              </button>
+            </Link>
           ))}
         </div>
 
@@ -138,7 +75,7 @@ const Navbar = () => {
                   <MdManageAccounts />
                   <span>Account</span>
                 </button>
-                <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-2 min-w-[180px] border border-gray-200 z-20">
+                <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-md mt-0 min-w-[180px] border border-gray-200 z-20">
                   <Link
                     to="/update-profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -182,24 +119,11 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-white shadow-lg">
           {navLinks.map((link, index) => (
-            <div key={index} className="relative">
-              <Link to={link.label.path}>
-                <button className="block w-full text-left px-4 py-2 text-black hover:text-[var(--skin-color)]">
-                  {link.label.name}
-                </button>
-              </Link>
-              <div className="bg-gray-100">
-                {link.dropdown.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    to={item.path}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <Link key={index} to={link.path}>
+              <button className="block w-full text-left px-4 py-2 text-black hover:text-[var(--skin-color)]">
+                {link.name}
+              </button>
+            </Link>
           ))}
         </div>
       )}

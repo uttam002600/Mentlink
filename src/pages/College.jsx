@@ -3,6 +3,7 @@ import FilterComponent from "../components/common/FilterComponent";
 import { ApiContext } from "../Context/ContextProvider";
 import Carousel from "../components/College/Carousal";
 import MentorGrid from "../components/College/MentorGrid";
+import CategorySelector from "../components/College/CategorySelector";
 
 const College = () => {
   // Filter Component
@@ -57,6 +58,7 @@ const College = () => {
         onApply={handleApplyFilters}
         onReset={handleResetFilters}
       />
+      <CategorySelector />
       <Carousel slides={slides} />
       <MentorGrid />
     </>

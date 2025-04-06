@@ -41,6 +41,17 @@ const ContextProvider = ({ children }) => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  //Logic for dataFetching
+  const [mentors, setMentors] = useState([]);
+  const [mentees, setMentees] = useState([]);
+  const [authUser, setAuthUser] = useState(null);
+  const [authPage, setAuthPage] = useState("login");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  //Loading state
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
   // for consistent user state after reloading
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -60,17 +71,6 @@ const ContextProvider = ({ children }) => {
 
     fetchCurrentUser();
   }, []);
-
-  //Logic for dataFetching
-  const [mentors, setMentors] = useState([]);
-  const [mentees, setMentees] = useState([]);
-  const [authUser, setAuthUser] = useState(null);
-  const [authPage, setAuthPage] = useState("login");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  //Loading state
-  const [registerLoading, setRegisterLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
 
   // Methods for fetching data
   const loadMentors = async () => {

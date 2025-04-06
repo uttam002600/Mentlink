@@ -6,9 +6,10 @@ import "./index.css";
 import Navbar from "./components/common/Navbar";
 import AuthPage from "./pages/AuthPage";
 import Footer from "./components/common/Footer";
-import Global from "./pages/Global";
 import College from "./pages/College";
 import UpdateProfile from "./pages/UpdateProfile";
+import AboutUs from "./pages/AboutUs";
+import Collaboration from "./pages/Collaboration";
 
 const App = () => {
   return (
@@ -17,9 +18,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<College />} />
         <Route path="*" element={<College />} />
-        <Route path="/global" element={<Global />} />
+        <Route path="/collaboration" element={<Collaboration />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/auth" element={<AuthPage />} />
-        {/* <Route path="/update-profile" element={<UpdateProfile />} /> */}
+        <Route path="/update-profile" element={<UpdateProfile />} />
       </Routes>
       <Footer />
       <Toaster />

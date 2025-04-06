@@ -6,13 +6,13 @@ import {
   FaHandshake,
 } from "react-icons/fa";
 
-const AboutUs = () => {
+const AboutSection = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Heading and Introduction */}
       <section className="text-center mb-12">
         <h1 className="text-5xl font-bold text-[var(--text-black-900)]">
-          About MentLink
+          About MentPat
         </h1>
         <h2 className="text-3xl text-[var(--text-black-700)] mt-2 italic">
           Empowering Connections, Transforming Lives.
@@ -83,7 +83,7 @@ const AboutUs = () => {
                 Inception
               </h3>
               <p className="text-[var(--text-black-700)]">
-                MentLink was founded in 2020 with a vision to connect mentors
+                MentLink was founded in 2024 with a vision to connect mentors
                 and mentees.
               </p>
             </div>
@@ -94,9 +94,7 @@ const AboutUs = () => {
               <h3 className="font-semibold text-[var(--text-black-900)]">
                 Milestone 1
               </h3>
-              <p className="text-[var(--text-black-700)]">
-                Reached 1,000 active users in 2021.
-              </p>
+              <p className="text-[var(--text-black-700)]">updating soon...</p>
             </div>
           </div>
           <div className="flex items-start">
@@ -105,9 +103,7 @@ const AboutUs = () => {
               <h3 className="font-semibold text-[var(--text-black-900)]">
                 Milestone 2
               </h3>
-              <p className="text-[var(--text-black-700)]">
-                Awarded Best Mentoring Platform in 2022.
-              </p>
+              <p className="text-[var(--text-black-700)]">updating soon...</p>
             </div>
           </div>
         </div>
@@ -121,32 +117,19 @@ const AboutUs = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-[var(--bg-black-50)] p-6 rounded-lg shadow-lg text-center transition-transform transform hover:scale-105 duration-300">
             <img
-              src="https://via.placeholder.com/150"
+              src="assets/AboutUs/uttam.png"
               alt="Team Member"
               className="rounded-full mx-auto mb-4"
             />
             <h3 className="text-lg font-semibold text-[var(--text-black-900)]">
-              John Doe
+              Uttam Upadhyay
             </h3>
             <p className="text-[var(--text-black-700)]">Founder & CEO</p>
             <p className="text-[var(--text-black-700)]">
-              Passionate about mentoring and personal development.
+              Passionate Developer.
             </p>
           </div>
-          <div className="bg-[var(--bg-black-50)] p-6 rounded-lg shadow-lg text-center transition-transform transform hover:scale-105 duration-300">
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Team Member"
-              className="rounded-full mx-auto mb-4"
-            />
-            <h3 className="text-lg font-semibold text-[var(--text-black-900)]">
-              Jane Smith
-            </h3>
-            <p className="text-[var(--text-black-700)]">Co-Founder & CTO</p>
-            <p className="text-[var(--text-black-700)]">
-              Innovating technology for better mentoring experiences.
-            </p>
-          </div>
+
           {/* Add more team members as needed */}
         </div>
       </section>
@@ -154,4 +137,4 @@ const AboutUs = () => {
   );
 };
 
-export default AboutUs;
+export default AboutSection;
