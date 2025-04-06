@@ -41,6 +41,26 @@ const ContextProvider = ({ children }) => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  // for consistent user state after reloading
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axiosInstance.get("/users/getUser");
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+          setAuthUser(response.data.data);
+          console.log(response.data.data);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        setAuthUser(null);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
   //Logic for dataFetching
   const [mentors, setMentors] = useState([]);
   const [mentees, setMentees] = useState([]);
