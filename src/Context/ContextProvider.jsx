@@ -61,7 +61,6 @@ const ContextProvider = ({ children }) => {
         if (response.status === 200) {
           setIsAuthenticated(true);
           setAuthUser(response.data.data);
-          console.log(response.data.data);
         }
       } catch (error) {
         setIsAuthenticated(false);
@@ -140,7 +139,7 @@ const ContextProvider = ({ children }) => {
       setIsAuthenticated(false);
 
       // Optional: Redirect to login page
-      navigate("/login");
+      navigate("/");
 
       toast.success("You have been logged out successfully.");
     } catch (error) {
