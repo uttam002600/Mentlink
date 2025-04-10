@@ -195,6 +195,7 @@ const UpdateProfile = () => {
         }
       }
 
+      // console.log(payload);
       await axiosInstance.patch("/users/update-account-details", payload);
 
       toast.success("Profile updated successfully!");

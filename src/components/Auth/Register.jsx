@@ -113,7 +113,7 @@ const Register = ({ setAuthPage }) => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
           </div>
@@ -132,7 +132,7 @@ const Register = ({ setAuthPage }) => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
             {usernameStatus && (
@@ -161,7 +161,7 @@ const Register = ({ setAuthPage }) => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             >
               <option value="" disabled>
@@ -186,7 +186,7 @@ const Register = ({ setAuthPage }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
             <button
@@ -213,7 +213,7 @@ const Register = ({ setAuthPage }) => {
                 name="otp"
                 value={formData.otp}
                 onChange={handleChange}
-                className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+                className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
                 required
               />
             </div>
@@ -232,7 +232,7 @@ const Register = ({ setAuthPage }) => {
               name="college"
               value={formData.college}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             >
               <option value="" disabled>
@@ -258,7 +258,7 @@ const Register = ({ setAuthPage }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
             <button
@@ -273,7 +273,7 @@ const Register = ({ setAuthPage }) => {
           {/* Confirm Password Field */}
           <div className="mb-6 relative">
             <label
-              className="block text-[var(--text-black-700)] mb-2"
+              className="block  text-[var(--text-black-700)] mb-2"
               htmlFor="confirmPassword"
             >
               Confirm Password
@@ -284,7 +284,7 @@ const Register = ({ setAuthPage }) => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
             <button

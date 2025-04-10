@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -10,8 +10,12 @@ import College from "./pages/College";
 import UpdateProfile from "./pages/UpdateProfile";
 import AboutUs from "./pages/AboutUs";
 import Collaboration from "./pages/Collaboration";
+import MentorDashboard from "./pages/MentorDashboard";
+import { ApiContext } from "./Context/ContextProvider";
+import MenteeDashboard from "./pages/MenteeDashboard";
 
 const App = () => {
+  const { authUser: user } = useContext(ApiContext);
   return (
     <>
       <Navbar />
@@ -22,6 +26,12 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/update-profile" element={<UpdateProfile />} />
+        <Route
+          path="/dashboard"
+          element={
+            user?.role == "MENTOR" ? <MentorDashboard /> : <MenteeDashboard />
+          }
+        />
       </Routes>
       <Footer />
       <Toaster />

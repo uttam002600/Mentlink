@@ -51,7 +51,7 @@ const Login = ({ setAuthPage }) => {
               name="emailOrUsername"
               value={formData.emailOrUsername}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full p-2 border text-black font-medium border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
           </div>
@@ -68,7 +68,7 @@ const Login = ({ setAuthPage }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
+              className="w-full text-black font-medium p-2 border border-[var(--bg-black-50)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--skin-color)]"
               required
             />
           </div>
