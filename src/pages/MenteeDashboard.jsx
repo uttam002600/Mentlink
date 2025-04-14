@@ -12,13 +12,6 @@ const MenteeDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { authUser: user, isAuthenticated } = useContext(ApiContext);
-  if (!isAuthenticated || !user) {
-    return (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,6 +25,14 @@ const MenteeDashboard = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

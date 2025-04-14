@@ -1,7 +1,34 @@
 import { useContext } from "react";
+import { ApiContext } from "../../Context/ContextProvider";
+import { axiosInstance } from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const MentorCard = ({ user }) => {
   const { role, mentorDetails } = user;
+  const { authUser } = useContext(ApiContext);
+
+  // Add mentor to dasboard
+  const addMentorToDashboard = async (mentorId) => {
+    try {
+      if (authUser?.role !== "MENTEE") {
+        toast.error("Only mentees can add mentors to dashboard");
+        return;
+      }
+
+      const response = await axiosInstance.post("/users/add-mentor", {
+        mentorId,
+        menteeId: authUser._id,
+      });
+
+      if (response.data.success) {
+        toast.success("Mentor added to your dashboard successfully");
+        return true;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to add mentor");
+      return false;
+    }
+  };
 
   // Don't render if not a mentor or missing required data
   if (role !== "MENTOR" || !mentorDetails) return null;
@@ -66,7 +93,7 @@ const MentorCard = ({ user }) => {
   const mentorInfo = getMentorSpecificDetails();
 
   return (
-    <div className="flex flex-col bg-[--bg-color-50] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[--skin-color] border-opacity-20">
+    <div className="flex flex-col bg-[var(--bg-black-100)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[--skin-color] border-opacity-20">
       {/* Header Section */}
       <div className="flex items-start p-4 bg-[--skin-color] bg-opacity-10">
         <div className="relative mr-4">
@@ -142,7 +169,10 @@ const MentorCard = ({ user }) => {
         <button className="flex-1 bg-[--skin-color] text-white py-2 rounded-lg mr-2 hover:bg-opacity-90 transition">
           Connect
         </button>
-        <button className="flex-1 border border-[--skin-color] text-[--skin-color] py-2 rounded-lg hover:bg-[--skin-color] hover:bg-opacity-10 transition">
+        <button
+          className="flex-1 border border-[--skin-color] text-[--skin-color] py-2 rounded-lg hover:bg-[--skin-color] hover:bg-purple-500 hover:text-white transition"
+          onClick={() => addMentorToDashboard(user._id)}
+        >
           Add to Dashboard
         </button>
       </div>
