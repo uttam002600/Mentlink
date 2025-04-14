@@ -2,13 +2,16 @@ import React, { useContext, useEffect } from "react";
 import FilterComponent from "../components/common/FilterComponent";
 import { ApiContext } from "../Context/ContextProvider";
 import Carousel from "../components/College/Carousal";
-import MentorGrid from "../components/College/MentorGrid";
 import CategorySelector from "../components/College/CategorySelector";
+import RecommendationsSection from "../components/College/RecommendationsSection";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import { UserContext } from "../Context/userProvider";
 
 const College = () => {
   // Filter Component
   const { collegeFilterConfig, setCollegeFilterConfig } =
     useContext(ApiContext);
+  const { mentorsLoading } = useContext(UserContext);
 
   useEffect(() => {
     setCollegeFilterConfig((prevConfig) => ({
@@ -60,7 +63,11 @@ const College = () => {
       />
       <CategorySelector />
       <Carousel slides={slides} />
-      <MentorGrid />
+      {mentorsLoading ? (
+        <LoadingSpinner label="Loading Mentors" />
+      ) : (
+        <RecommendationsSection />
+      )}
     </>
   );
 };

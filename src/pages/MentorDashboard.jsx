@@ -4,13 +4,21 @@ import ManageAvailability from "../components/MentorDashboard/ManageAvailability
 import BookedSessions from "../components/MentorDashboard/BookedSessions";
 import ProfileSettings from "../components/MentorDashboard/ProfileSettings ";
 import { ApiContext } from "../Context/ContextProvider";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const MentorDashboard = () => {
   const [activeTab, setActiveTab] = useState("availability");
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { authUser: user } = useContext(ApiContext);
+  const { authUser: user, isAuthenticated } = useContext(ApiContext);
+  if (!isAuthenticated || !user) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleResize = () => {

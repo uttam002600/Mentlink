@@ -155,7 +155,7 @@ const Navbar = () => {
       {/* Mobile Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-white shadow-xl border-t border-[var(--bg-black-50)]">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <div className="px-2 pt-2 pb-3 bg-[var(--bg-black-900)] space-y-1 sm:px-3">
             {navLinks.map((link, index) => (
               <Link key={index} to={link.path}>
                 <button
@@ -170,7 +170,7 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          <div className="pt-4 pb-3 border-t bg-[var(--bg-black-900)] border-gray-200">
             {isAuthenticated ? (
               <div className="px-5 space-y-3">
                 <Link

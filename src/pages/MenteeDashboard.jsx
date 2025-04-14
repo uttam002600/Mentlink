@@ -4,13 +4,21 @@ import { ApiContext } from "../Context/ContextProvider";
 import BookAppointment from "../components/MenteeDashboard/BookAppointment";
 import Appointments from "../components/MenteeDashboard/Appointments";
 import FeedbackNotes from "../components/MenteeDashboard/FeedbackNotes";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const MenteeDashboard = () => {
   const [activeTab, setActiveTab] = useState("availability");
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { authUser: user } = useContext(ApiContext);
+  const { authUser: user, isAuthenticated } = useContext(ApiContext);
+  if (!isAuthenticated || !user) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleResize = () => {

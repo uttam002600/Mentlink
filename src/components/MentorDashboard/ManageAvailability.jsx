@@ -78,7 +78,7 @@ const ManageAvailability = () => {
         recurrence: data.recurrence.value,
       };
 
-      await axiosInstance.post("/availability", payload);
+      await axiosInstance.patch("/users/mentor/availability", payload);
       toast.success("Availability saved successfully!");
     } catch (error) {
       const errorMessage =
@@ -192,7 +192,7 @@ const ManageAvailability = () => {
             className={`px-6 py-3 rounded-lg text-white font-medium ${
               loading
                 ? "bg-[--skin-color] opacity-70"
-                : "bg-[--skin-color] hover:bg-[--skin-color-dark]"
+                : "bg-[--skin-color] hover:bg-green"
             } transition-colors duration-200`}
           >
             {loading ? "Saving..." : "Save Availability"}

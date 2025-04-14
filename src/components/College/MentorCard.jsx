@@ -1,80 +1,149 @@
-import React from "react";
+import { useContext } from "react";
 
-const MentorCard = ({ mentor }) => {
+const MentorCard = ({ user }) => {
+  const { role, mentorDetails } = user;
+
+  // Don't render if not a mentor or missing required data
+  if (role !== "MENTOR" || !mentorDetails) return null;
+
+  // Calculate average rating (dummy if none)
+  const avgRating =
+    mentorDetails.ratings?.length > 0
+      ? mentorDetails.ratings.reduce((sum, r) => sum + r.rating, 0) /
+        mentorDetails.ratings.length
+      : (Math.random() * 2 + 3).toFixed(1); // Random between 3.0-5.0
+
+  // Get mentor type specific details
+  const getMentorSpecificDetails = () => {
+    switch (mentorDetails.mentorType) {
+      case "PROFESSOR":
+        return {
+          title: mentorDetails.professorDetails?.designation || "Professor",
+          experience: `${
+            mentorDetails.professorDetails?.yearsOfExperience || "N/A"
+          } years experience`,
+          expertise:
+            mentorDetails.professorDetails?.domainExpertise?.join(", ") ||
+            "General",
+          icon: "🎓",
+        };
+      case "ALUMNI":
+        return {
+          title: `${
+            mentorDetails.alumniDetails?.currentPosition || "Alumni"
+          } at ${mentorDetails.alumniDetails?.currentCompany || "N/A"}`,
+          experience: `Batch of ${
+            mentorDetails.alumniDetails?.batchPassout || "N/A"
+          }`,
+          expertise:
+            mentorDetails.alumniDetails?.domainExpertise?.join(", ") ||
+            "General",
+          icon: "👔",
+        };
+      case "PEER_GROUP":
+        return {
+          title: `Year ${
+            mentorDetails.peerGroupDetails?.currentYear || "N/A"
+          } Student`,
+          experience: `${
+            mentorDetails.peerGroupDetails?.projects?.length || 0
+          } projects`,
+          expertise:
+            mentorDetails.peerGroupDetails?.achievements?.join(", ") ||
+            "Active Learner",
+          icon: "👥",
+        };
+      default:
+        return {
+          title: "Mentor",
+          experience: "Experienced Guide",
+          expertise: "Multiple Domains",
+          icon: "🌟",
+        };
+    }
+  };
+
+  const mentorInfo = getMentorSpecificDetails();
+
   return (
-    <div className="bg-[var(--bg-black-100)] shadow-md rounded-lg p-4 max-w-sm mx-auto">
-      {/* Mentor Image */}
-      <div className="flex items-center space-x-4">
-        <img
-          src={mentor.photo}
-          alt={mentor.name}
-          className="w-16 h-16 rounded-full border-2 border-[var(--skin-color)]"
-        />
-        <div>
-          {/* Name and Designation */}
-          <h2 className="text-[var(--text-black-900)] text-lg font-semibold">
-            {mentor.name}
-          </h2>
-          <p className="text-[var(--text-black-700)] text-sm">
-            {mentor.designation}
-          </p>
+    <div className="flex flex-col bg-[--bg-color-50] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[--skin-color] border-opacity-20">
+      {/* Header Section */}
+      <div className="flex items-start p-4 bg-[--skin-color] bg-opacity-10">
+        <div className="relative mr-4">
+          <img
+            src={user.avatar || "/default-avatar.png"}
+            alt={user.fullName}
+            className="w-16 h-16 rounded-full object-cover border-2 border-[--skin-color]"
+          />
+          <span className="absolute -bottom-1 -right-1 text-xs bg-white rounded-full p-1 border border-[--skin-color]">
+            {mentorInfo.icon}
+          </span>
         </div>
-      </div>
-
-      {/* Organization & University */}
-      <div className="mt-4">
-        <p className="text-[var(--text-black-900)] text-sm">
-          <span className="font-bold">Organization:</span> {mentor.organization}
-        </p>
-        <p className="text-[var(--text-black-900)] text-sm">
-          <span className="font-bold">University:</span> {mentor.university}
-        </p>
-      </div>
-
-      {/* Expertise */}
-      <div className="mt-4">
-        <h3 className="text-[var(--text-black-900)] font-bold text-sm">
-          Expertise:
-        </h3>
-        <ul className="flex flex-wrap gap-2 mt-1">
-          {mentor.expertise.map((skill, index) => (
-            <li
-              key={index}
-              className="bg-[var(--bg-black-50)] text-[var(--text-black-900)] text-xs px-2 py-1 rounded-md"
-            >
-              {skill}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Batch (Optional) */}
-      {mentor.batch && (
-        <div className="mt-4">
-          <p className="text-[var(--text-black-900)] text-sm">
-            <span className="font-bold">Batch:</span> {mentor.batch}
-          </p>
-        </div>
-      )}
-
-      {/* Rating */}
-      <div className="mt-4 flex items-center">
-        <p className="text-[var(--text-black-900)] text-sm font-bold">
-          Rating: {mentor.rating}
-        </p>
-        <div className="ml-2 flex">
-          {Array.from({ length: Math.round(mentor.rating) }, (_, i) => (
-            <span key={i} className="text-[var(--skin-color)] text-sm mr-1">
-              ★
+        <div className="flex-1">
+          <div className="flex items-baseline gap-2">
+            <h3 className="font-bold text-[--text-black-900] text-lg">
+              {user.fullName}
+            </h3>
+            <span className="text-xs text-[--text-balck-700] font-bold">
+              ({mentorDetails.mentorType.replace("_", " ")})
             </span>
-          ))}
+          </div>
+          <p className="text-sm font-medium text-[--text-balck-700] mt-1 bg-[--skin-color] bg-opacity-10 px-2 py-1 rounded-md inline-block">
+            {user.college || "College not specified"}
+          </p>
+          <p className="text-xs text-[--text-black-700] font-bold mt-2">
+            {mentorInfo.title}
+          </p>
         </div>
       </div>
 
-      {/* CTA Button */}
-      <div className="mt-4">
-        <button className="bg-[var(--skin-color)] text-white text-sm px-4 py-2 rounded-md hover:bg-red-600 transition">
+      {/* Body Section */}
+      <div className="p-4 flex-1">
+        <div className="flex items-center mb-3">
+          <div className="flex">
+            {[...Array(5)].map((_, i) => (
+              <span
+                key={i}
+                className={`text-lg ${
+                  i < Math.floor(avgRating)
+                    ? "text-[--skin-color]"
+                    : "text-gray-300"
+                }`}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <span className="ml-2 text-sm text-[--text-black-700]">
+            {avgRating} ({mentorDetails.ratings?.length || 0} reviews)
+          </span>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p className="text-[--text-black-700]">{mentorInfo.experience}</p>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {mentorInfo.expertise
+              .split(", ")
+              .slice(0, 3)
+              .map((skill, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-1 bg-[--skin-color] bg-opacity-10 text-[--text-balck-700] text-bold rounded-full"
+                >
+                  {skill}
+                </span>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Buttons */}
+      <div className="flex border-t border-[--skin-color] border-opacity-20 p-3">
+        <button className="flex-1 bg-[--skin-color] text-white py-2 rounded-lg mr-2 hover:bg-opacity-90 transition">
           Connect
+        </button>
+        <button className="flex-1 border border-[--skin-color] text-[--skin-color] py-2 rounded-lg hover:bg-[--skin-color] hover:bg-opacity-10 transition">
+          Add to Dashboard
         </button>
       </div>
     </div>
