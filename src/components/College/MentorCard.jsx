@@ -2,10 +2,35 @@ import { useContext } from "react";
 import { ApiContext } from "../../Context/ContextProvider";
 import { axiosInstance } from "../../utils/axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const MentorCard = ({ user }) => {
   const { role, mentorDetails } = user;
   const { authUser } = useContext(ApiContext);
+
+  const navigate = useNavigate();
+
+  //Connect
+  const handleConnect = async (mentorId) => {
+    try {
+      const response = await axiosInstance.post(`/connect/${mentorId}`);
+      console.log(response.data);
+
+      if (response.data.data) {
+        // Redirect to availability page
+        navigate(`/mentor/${mentorId}/availability`);
+      } else {
+        toast.error("Mentor hasn't set availability yet", {
+          className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
+        });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Connection failed", {
+        className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
+      });
+    } finally {
+    }
+  };
 
   // Add mentor to dasboard
   const addMentorToDashboard = async (mentorId) => {
@@ -166,7 +191,12 @@ const MentorCard = ({ user }) => {
 
       {/* Footer Buttons */}
       <div className="flex border-t border-[--skin-color] border-opacity-20 p-3">
-        <button className="flex-1 bg-[--skin-color] text-white py-2 rounded-lg mr-2 hover:bg-opacity-90 transition">
+        <button
+          onClick={() => {
+            handleConnect(user._id);
+          }}
+          className="flex-1 bg-[--skin-color] text-white py-2 rounded-lg mr-2 hover:bg-opacity-90 transition"
+        >
           Connect
         </button>
         <button

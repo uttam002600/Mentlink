@@ -3,17 +3,19 @@ import axios from "axios";
 import LoadingSpinner from "../common/LoadingSpinner";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../utils/axios";
+import { useNavigate } from "react-router-dom";
 
 const BookAppointment = () => {
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchMentors = async () => {
       try {
         setLoading(true);
-        // Replace with your actual API endpoint
         const response = await axiosInstance.get("/users/mentee/mentors");
         setMentors(response.data.data);
       } catch (err) {
@@ -28,10 +30,24 @@ const BookAppointment = () => {
 
   const handleConnect = async (mentorId) => {
     try {
-      await axios.post(`/api/mentee/connect/${mentorId}`);
-      // Update UI or show success message
+      setLoading(true);
+      const response = await axiosInstance.post(`/connect/${mentorId}`);
+      console.log(response.data);
+
+      if (response.data.data) {
+        // Redirect to availability page
+        navigate(`/mentor/${mentorId}/availability`);
+      } else {
+        toast.error("Mentor hasn't set availability yet", {
+          className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
+        });
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Connection failed");
+      toast.error(err.response?.data?.message || "Connection failed", {
+        className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 

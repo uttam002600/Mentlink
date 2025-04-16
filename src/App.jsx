@@ -13,6 +13,7 @@ import Collaboration from "./pages/Collaboration";
 import MentorDashboard from "./pages/MentorDashboard";
 import { ApiContext } from "./Context/ContextProvider";
 import MenteeDashboard from "./pages/MenteeDashboard";
+import MentorAvailability from "./components/Internal-Page/MentorAvailability";
 
 const App = () => {
   const { authUser: user } = useContext(ApiContext);
@@ -26,6 +27,10 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/update-profile" element={<UpdateProfile />} />
+        <Route
+          path="/mentor/:mentorId/availability"
+          element={<MentorAvailability />}
+        />
         <Route
           path="/dashboard"
           element={
