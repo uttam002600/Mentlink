@@ -13,8 +13,10 @@ const MentorCard = ({ user }) => {
   //Connect
   const handleConnect = async (mentorId) => {
     try {
+      if (!authUser) {
+        return toast.error("Login as Mentee, to check availability");
+      }
       const response = await axiosInstance.post(`/connect/${mentorId}`);
-      console.log(response.data);
 
       if (response.data.data) {
         // Redirect to availability page

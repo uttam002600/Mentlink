@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-import { format, parseISO, getDay } from "date-fns";
+import { format, isValid } from "date-fns";
 import * as tz from "date-fns-tz";
 import { axiosInstance } from "../../utils/axios";
 import LoadingSpinner from "../common/LoadingSpinner";
-
-const { utcToZonedTime, zonedTimeToUtc } = tz;
+import { DateTime } from "luxon";
 
 const MentorAvailability = () => {
   const { mentorId } = useParams();
@@ -16,9 +14,11 @@ const MentorAvailability = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [userTimezone, setUserTimezone] = useState(
-    Intl.DateTimeFormat().resolvedOptions().timeZone
-  );
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [requestMessage, setRequestMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // const { utcToZonedTime, zonedTimeToUtc } = tz;
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -41,58 +41,106 @@ const MentorAvailability = () => {
     fetchAvailability();
   }, [mentorId, navigate]);
 
-  // Convert time between timezones
-  const convertTime = (timeStr, fromTz, toTz, date) => {
+  const convertTime = (timeString, fromTimezone, date) => {
     try {
+      if (!timeString || !fromTimezone || !date) return timeString;
+
       const dateStr = format(date, "yyyy-MM-dd");
-      const datetimeStr = `${dateStr}T${timeStr}`;
-      const zonedDate = zonedTimeToUtc(datetimeStr, fromTz);
-      const localDate = utcToZonedTime(zonedDate, toTz);
-      return format(localDate, "HH:mm");
+      return DateTime.fromFormat(
+        `${dateStr} ${timeString}`,
+        "yyyy-MM-dd HH:mm",
+        {
+          zone: fromTimezone,
+        }
+      )
+        .setZone(userTimezone)
+        .toFormat("HH:mm");
     } catch (error) {
-      console.error("Timezone conversion failed:", error);
-      return timeStr;
+      console.error("Luxon conversion error:", error);
+      return timeString;
     }
   };
 
-  // Update available slots when date changes
   useEffect(() => {
     if (availability && selectedDate) {
       const dayName = format(selectedDate, "EEEE");
+      const slots = availability.availableDays.includes(dayName)
+        ? availability.timeSlots
+            .filter((slot) => !slot.isBooked)
+            .map((slot) => ({
+              ...slot,
+              localStart: convertTime(
+                slot.startTime,
+                availability.timezone,
+                selectedDate
+              ),
+              localEnd: convertTime(
+                slot.endTime,
+                availability.timezone,
+                selectedDate
+              ),
+              originalStart: slot.startTime,
+              originalEnd: slot.endTime,
+            }))
+        : [];
 
-      if (availability.availableDays.includes(dayName)) {
-        const slots = availability.timeSlots
-          .filter((slot) => !slot.isBooked)
-          .map((slot) => ({
-            ...slot,
-            localStart: convertTime(
-              slot.startTime,
-              availability.timezone,
-              userTimezone,
-              selectedDate
-            ),
-            localEnd: convertTime(
-              slot.endTime,
-              availability.timezone,
-              userTimezone,
-              selectedDate
-            ),
-            originalStart: slot.startTime,
-            originalEnd: slot.endTime,
-          }));
-
-        setAvailableSlots(slots);
-      } else {
-        setAvailableSlots([]);
-      }
+      setAvailableSlots(slots);
+      setSelectedSlot(null); // Reset selected slot when date changes
     }
   }, [selectedDate, availability, userTimezone]);
 
   const handleSlotSelect = (slot) => {
-    // Implement booking logic here
-    toast.success(`Slot selected: ${slot.localStart} - ${slot.localEnd}`, {
-      className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
-    });
+    setSelectedSlot(slot);
+  };
+
+  const submitRequest = async () => {
+    if (!selectedSlot) {
+      toast.error("Please select a time slot first");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Validate mentorId is a proper ObjectId
+      if (!mentorId || !/^[0-9a-fA-F]{24}$/.test(mentorId)) {
+        throw new Error("Invalid mentor ID format");
+      }
+
+      const payload = {
+        mentorId: mentorId, // Ensure this is a valid 24-character hex string
+        date: format(selectedDate, "yyyy-MM-dd"),
+        time: selectedSlot.originalStart,
+        duration: availability.slotDuration,
+        message: requestMessage,
+      };
+
+      // Debug the payload before sending
+      console.log("Sending session request:", payload);
+
+      const response = await axiosInstance.post("/connect/request", payload);
+
+      toast.success("Session request sent successfully!");
+      setRequestMessage("");
+      setSelectedSlot(null);
+    } catch (err) {
+      let errorMessage = "Failed to request session";
+
+      if (err.response?.data) {
+        // Handle backend validation errors
+        if (err.response.data.name === "CastError") {
+          errorMessage = "Invalid data format - please try again";
+        } else {
+          errorMessage = err.response.data.message || errorMessage;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -107,7 +155,6 @@ const MentorAvailability = () => {
     );
   }
 
-  // Custom calendar rendering
   const renderCalendar = () => {
     const today = new Date();
     const daysInMonth = new Date(
@@ -143,13 +190,14 @@ const MentorAvailability = () => {
         format(date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd");
       const isSelected =
         format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
+      const hasSelectedSlot = selectedSlot && isSelected;
 
       days.push(
         <button
           key={`day-${day}`}
           onClick={() => setSelectedDate(date)}
           disabled={!isAvailable || date < today}
-          className={`h-12 flex items-center justify-center rounded-full transition-all
+          className={`h-12 flex items-center justify-center rounded-full transition-all relative
             ${
               isSelected
                 ? "bg-[var(--skin-color)] text-[var(--text-black-900)]"
@@ -160,6 +208,11 @@ const MentorAvailability = () => {
               isAvailable && date >= today
                 ? "hover:bg-[var(--bg-black-50)] cursor-pointer"
                 : "opacity-50 cursor-not-allowed"
+            }
+            ${
+              hasSelectedSlot
+                ? "ring-2 ring-offset-2 ring-[var(--skin-color)]"
+                : ""
             }
           `}
         >
@@ -250,7 +303,12 @@ const MentorAvailability = () => {
                   <button
                     key={index}
                     onClick={() => handleSlotSelect(slot)}
-                    className="w-full p-4 bg-[var(--bg-black-50)] hover:bg-[var(--bg-black-50)]/80 rounded-lg transition flex justify-between items-center"
+                    className={`w-full p-4 rounded-lg transition flex justify-between items-center
+                      ${
+                        selectedSlot?.originalStart === slot.originalStart
+                          ? "bg-[var(--skin-color)] text-[var(--text-black-900)]"
+                          : "bg-[var(--bg-black-50)] hover:bg-[var(--bg-black-50)]/80"
+                      }`}
                   >
                     <span className="font-medium">
                       {slot.localStart} - {slot.localEnd}
@@ -274,14 +332,48 @@ const MentorAvailability = () => {
               </div>
             )}
 
-            {/* Additional Info */}
+            {/* Message and Request Section */}
+            {selectedSlot && (
+              <div className="mt-6">
+                <div className="mb-4">
+                  <label
+                    htmlFor="requestMessage"
+                    className="block text-sm font-medium mb-1"
+                  >
+                    Message (Optional)
+                  </label>
+                  <textarea
+                    id="requestMessage"
+                    rows={3}
+                    value={requestMessage}
+                    onChange={(e) => setRequestMessage(e.target.value)}
+                    className="w-full p-2 bg-[var(--bg-black-50)] rounded border border-[var(--bg-black-50)] focus:border-[var(--skin-color)] focus:ring-[var(--skin-color)]"
+                    placeholder="Add a message for the mentor..."
+                  />
+                </div>
+                <button
+                  onClick={submitRequest}
+                  disabled={isSubmitting}
+                  className={`w-full py-2 px-4 rounded-lg font-medium transition
+                    ${
+                      isSubmitting
+                        ? "bg-[var(--bg-black-50)] cursor-not-allowed"
+                        : "bg-[var(--skin-color)] hover:bg-[var(--skin-color)]/90 text-[var(--text-black-900)]"
+                    }`}
+                >
+                  {isSubmitting ? "Sending Request..." : "Send Request"}
+                </button>
+              </div>
+            )}
+
+            {/* Legend Section */}
             <div className="mt-6 text-sm">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-[var(--skin-color)]"></div>
-                <span>Selected date</span>
+                <div className="w-3 h-3 rounded-full bg-[var(--skin-color)]"></div>
+                <span>Selected date/slot</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[var(--skin-color)] opacity-50"></div>
+                <div className="w-3 h-3 rounded-full bg-[var(--skin-color)] opacity-50"></div>
                 <span>Available day</span>
               </div>
             </div>
