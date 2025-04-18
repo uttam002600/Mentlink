@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { ApiContext } from "../../Context/ContextProvider";
 import { axiosInstance } from "../../utils/axios";
 import toast from "react-hot-toast";
@@ -7,68 +7,49 @@ import { useNavigate } from "react-router-dom";
 const MentorCard = ({ user }) => {
   const { role, mentorDetails } = user;
   const { authUser } = useContext(ApiContext);
-
+  const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
 
-  //Connect
+  // Connect handler
   const handleConnect = async (mentorId) => {
     try {
-      if (!authUser) {
-        return toast.error("Login as Mentee, to check availability");
-      }
+      if (!authUser)
+        return toast.error("Login as Mentee to check availability");
       const response = await axiosInstance.post(`/connect/${mentorId}`);
-
-      if (response.data.data) {
-        // Redirect to availability page
-        navigate(`/mentor/${mentorId}/availability`);
-      } else {
-        toast.error("Mentor hasn't set availability yet", {
-          className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
-        });
-      }
+      response.data.data
+        ? navigate(`/mentor/${mentorId}/availability`)
+        : toast.error("Mentor hasn't set availability yet");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Connection failed", {
-        className: "bg-[var(--bg-black-100)] text-[var(--text-black-700)]",
-      });
-    } finally {
+      toast.error(err.response?.data?.message || "Connection failed");
     }
   };
 
-  // Add mentor to dasboard
+  // Add to dashboard handler
   const addMentorToDashboard = async (mentorId) => {
     try {
-      if (authUser?.role !== "MENTEE") {
-        toast.error("Only mentees can add mentors to dashboard");
-        return;
-      }
-
-      const response = await axiosInstance.post("/users/add-mentor", {
+      if (authUser?.role !== "MENTEE")
+        return toast.error("Only mentees can add mentors");
+      await axiosInstance.post("/users/add-mentor", {
         mentorId,
         menteeId: authUser._id,
       });
-
-      if (response.data.success) {
-        toast.success("Mentor added to your dashboard successfully");
-        return true;
-      }
+      toast.success("Mentor added to dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add mentor");
-      return false;
     }
   };
 
-  // Don't render if not a mentor or missing required data
   if (role !== "MENTOR" || !mentorDetails) return null;
 
-  // Calculate average rating (dummy if none)
+  // Calculate average rating
   const avgRating =
     mentorDetails.ratings?.length > 0
       ? mentorDetails.ratings.reduce((sum, r) => sum + r.rating, 0) /
         mentorDetails.ratings.length
-      : (Math.random() * 2 + 3).toFixed(1); // Random between 3.0-5.0
+      : (Math.random() * 2 + 3).toFixed(1);
 
-  // Get mentor type specific details
-  const getMentorSpecificDetails = () => {
+  // Get mentor details
+  const mentorInfo = (() => {
     switch (mentorDetails.mentorType) {
       case "PROFESSOR":
         return {
@@ -115,98 +96,122 @@ const MentorCard = ({ user }) => {
           icon: "🌟",
         };
     }
-  };
-
-  const mentorInfo = getMentorSpecificDetails();
+  })();
 
   return (
-    <div className="flex flex-col bg-[var(--bg-black-100)] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[--skin-color] border-opacity-20">
-      {/* Header Section */}
-      <div className="flex items-start p-4 bg-[--skin-color] bg-opacity-10">
-        <div className="relative mr-4">
-          <img
-            src={user.avatar || "/default-avatar.png"}
-            alt={user.fullName}
-            className="w-16 h-16 rounded-full object-cover border-2 border-[--skin-color]"
-          />
-          <span className="absolute -bottom-1 -right-1 text-xs bg-white rounded-full p-1 border border-[--skin-color]">
-            {mentorInfo.icon}
-          </span>
-        </div>
-        <div className="flex-1">
-          <div className="flex items-baseline gap-2">
-            <h3 className="font-bold text-[--text-black-900] text-lg">
+    <div
+      className="w-full h-full min-h-[400px] perspective-1000"
+      onMouseEnter={() => setIsFlipped(true)}
+      onMouseLeave={() => setIsFlipped(false)}
+    >
+      <div
+        className={`relative w-full h-full transition-all duration-500 transform-style-preserve-3d ${
+          isFlipped ? "rotate-y-180" : ""
+        }`}
+      >
+        {/* Front Side */}
+        <div className="absolute w-full h-full backface-hidden bg-[--bg-black-100] rounded-lg shadow-lg p-4 flex flex-col border border-[--bg-black-50] overflow-hidden">
+          <div className="flex flex-col items-center text-center flex-grow">
+            <div className="relative mb-4">
+              <img
+                src={user.avatar || "/default-avatar.png"}
+                alt={user.fullName}
+                className="w-20 h-20 rounded-full object-cover border-4 border-[--bg-black-50] shadow-md mx-auto"
+              />
+              <span className="absolute bottom-0 right-2 text-lg bg-[--bg-black-900] text-white rounded-full w-7 h-7 flex items-center justify-center">
+                {mentorInfo.icon}
+              </span>
+            </div>
+
+            <h3 className="text-lg font-bold text-[--text-black-900] mb-1 line-clamp-1">
               {user.fullName}
             </h3>
-            <span className="text-xs text-[--text-balck-700] font-bold">
-              ({mentorDetails.mentorType.replace("_", " ")})
-            </span>
-          </div>
-          <p className="text-sm font-medium text-[--text-balck-700] mt-1 bg-[--skin-color] bg-opacity-10 px-2 py-1 rounded-md inline-block">
-            {user.college || "College not specified"}
-          </p>
-          <p className="text-xs text-[--text-black-700] font-bold mt-2">
-            {mentorInfo.title}
-          </p>
-        </div>
-      </div>
 
-      {/* Body Section */}
-      <div className="p-4 flex-1">
-        <div className="flex items-center mb-3">
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <span
-                key={i}
-                className={`text-lg ${
-                  i < Math.floor(avgRating)
-                    ? "text-[--skin-color]"
-                    : "text-gray-300"
-                }`}
-              >
-                ★
+            <p className="text-xs text-[--text-black-700] font-medium mb-2">
+              {mentorDetails.mentorType.replace("_", " ")}
+            </p>
+
+            <p className="text-xs text-[--text-black-700] bg-[--bg-black-50] px-2 py-1 rounded-full mb-3 line-clamp-1">
+              {user.college || "College not specified"}
+            </p>
+
+            <div className="flex items-center justify-center mb-3">
+              <div className="flex mr-1">
+                {[...Array(5)].map((_, i) => (
+                  <span
+                    key={i}
+                    className={`text-sm ${
+                      i < Math.floor(avgRating)
+                        ? "text-yellow-400"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <span className="text-xs text-[--text-black-700]">
+                {avgRating} ({mentorDetails.ratings?.length || 0})
               </span>
-            ))}
+            </div>
+
+            <div className="text-center mb-3">
+              <p className="text-sm font-medium text-[--text-black-900] mb-1 line-clamp-1">
+                {mentorInfo.title}
+              </p>
+              <p className="text-xs text-[--text-black-700] line-clamp-1">
+                {mentorInfo.experience}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-1 mb-3">
+              {mentorInfo.expertise
+                .split(", ")
+                .slice(0, 3)
+                .map((skill, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-0.5 bg-[--bg-black-50] text-[--text-black-900] text-xs font-medium rounded-full line-clamp-1"
+                  >
+                    {skill}
+                  </span>
+                ))}
+            </div>
           </div>
-          <span className="ml-2 text-sm text-[--text-black-700]">
-            {avgRating} ({mentorDetails.ratings?.length || 0} reviews)
-          </span>
+
+          <div className="animate-pulse text-xs text-[--skin-color] font-medium text-center mt-auto pt-2">
+            Click to connect
+          </div>
         </div>
 
-        <div className="space-y-2 text-sm">
-          <p className="text-[--text-black-700]">{mentorInfo.experience}</p>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {mentorInfo.expertise
-              .split(", ")
-              .slice(0, 3)
-              .map((skill, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-1 bg-[--skin-color] bg-opacity-10 text-[--text-balck-700] text-bold rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
+        {/* Back Side */}
+        <div className="absolute w-full h-full backface-hidden bg-[--bg-black-100] rounded-lg shadow-lg p-4 flex flex-col justify-center border border-[--bg-black-50] rotate-y-180 overflow-hidden">
+          <h3 className="text-sm font-bold text-[--text-black-900] mb-4 text-center line-clamp-1">
+            Connect with {user.fullName.split(" ")[0]}
+          </h3>
+
+          <div className="space-y-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleConnect(user._id);
+              }}
+              className="w-full py-2 text-sm bg-[--skin-color] text-white rounded font-medium hover:bg-opacity-90 transition-all"
+            >
+              Schedule Session
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                addMentorToDashboard(user._id);
+              }}
+              className="w-full py-2 text-sm border border-[--skin-color] text-[--skin-color] rounded font-medium hover:bg-purple-500 hover:text-white transition-all"
+            >
+              Add to Dashboard
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Footer Buttons */}
-      <div className="flex border-t border-[--skin-color] border-opacity-20 p-3">
-        <button
-          onClick={() => {
-            handleConnect(user._id);
-          }}
-          className="flex-1 bg-[--skin-color] text-white py-2 rounded-lg mr-2 hover:bg-opacity-90 transition"
-        >
-          Connect
-        </button>
-        <button
-          className="flex-1 border border-[--skin-color] text-[--skin-color] py-2 rounded-lg hover:bg-[--skin-color] hover:bg-purple-500 hover:text-white transition"
-          onClick={() => addMentorToDashboard(user._id)}
-        >
-          Add to Dashboard
-        </button>
       </div>
     </div>
   );

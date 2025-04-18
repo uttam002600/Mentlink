@@ -15,12 +15,13 @@ const RecommendationsSection = () => {
   );
 
   useEffect(() => {
-    // Update cards per page based on screen size
     const updateCardsPerPage = () => {
       if (window.innerWidth < 640) {
-        setCardsPerPage(3); // Mobile - 1 column
+        setCardsPerPage(1); // Mobile - 1 column
+      } else if (window.innerWidth < 768) {
+        setCardsPerPage(2); // Small tablet - 2 columns
       } else if (window.innerWidth < 1024) {
-        setCardsPerPage(4); // Tablet - 2 columns (2x2)
+        setCardsPerPage(3); // Tablet - 3 columns
       } else {
         setCardsPerPage(4); // Desktop - 4 columns
       }
@@ -28,7 +29,6 @@ const RecommendationsSection = () => {
 
     updateCardsPerPage();
     window.addEventListener("resize", updateCardsPerPage);
-
     return () => window.removeEventListener("resize", updateCardsPerPage);
   }, []);
 
@@ -39,7 +39,17 @@ const RecommendationsSection = () => {
   }, [mentors, cardsPerPage]);
 
   if (mentorsLoading) return <LoadingSpinner />;
-  if (!mentors || mentors.length === 0) return null;
+  if (!mentors || mentors.length === 0)
+    return (
+      <section className="my-8 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-[--text-black-900] mb-6">
+          Recommended Mentors
+        </h2>
+        <div className="text-center py-12 text-[--text-black-700]">
+          No mentors found matching your criteria
+        </div>
+      </section>
+    );
 
   // Get current cards
   const indexOfLastCard = currentPage * cardsPerPage;
@@ -60,9 +70,21 @@ const RecommendationsSection = () => {
 
       <div className="relative">
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px]">
+        <div
+          className={`grid gap-6 ${
+            cardsPerPage === 1
+              ? "grid-cols-1"
+              : cardsPerPage === 2
+              ? "grid-cols-2"
+              : cardsPerPage === 3
+              ? "grid-cols-3"
+              : "grid-cols-4"
+          }`}
+        >
           {currentCards.map((mentor) => (
-            <MentorCard key={mentor._id} user={mentor} />
+            <div key={mentor._id} className="w-full h-full min-h-[400px]">
+              <MentorCard user={mentor} />
+            </div>
           ))}
         </div>
 
@@ -72,20 +94,22 @@ const RecommendationsSection = () => {
             <button
               onClick={prevPage}
               disabled={currentPage === 1}
-              className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-[--skin-color] text-white flex items-center justify-center shadow-md hover:bg-opacity-90 transition-all ${
+              className={`absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[--skin-color] text-white flex items-center justify-center shadow-md hover:bg-opacity-90 transition-all ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
+              aria-label="Previous page"
             >
               &lt;
             </button>
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}
-              className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-[--skin-color] text-white flex items-center justify-center shadow-md hover:bg-opacity-90 transition-all ${
+              className={`absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[--skin-color] text-white flex items-center justify-center shadow-md hover:bg-opacity-90 transition-all ${
                 currentPage === totalPages
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}
+              aria-label="Next page"
             >
               &gt;
             </button>
@@ -93,43 +117,44 @@ const RecommendationsSection = () => {
         )}
       </div>
 
-      {/* Pagination Dots */}
+      {/* Pagination Controls */}
       {mentors.length > cardsPerPage && (
-        <div className="flex justify-center mt-8 space-x-2">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => paginate(index + 1)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                currentPage === index + 1
-                  ? "bg-[--skin-color] scale-125"
-                  : "bg-gray-300"
-              }`}
-              aria-label={`Go to page ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+        <div className="mt-8">
+          {/* Pagination Dots */}
+          <div className="flex justify-center space-x-2 mb-2">
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => paginate(index + 1)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  currentPage === index + 1
+                    ? "bg-[--skin-color] scale-125"
+                    : "bg-gray-300"
+                }`}
+                aria-label={`Go to page ${index + 1}`}
+              />
+            ))}
+          </div>
 
-      {/* Page Numbers (Alternative to dots) */}
-      {mentors.length > cardsPerPage && (
-        <div className="flex justify-center mt-4 items-center space-x-2">
-          <span className="text-sm text-[--text-black-700]">
-            Page {currentPage} of {totalPages}
-          </span>
-          {totalPages > 5 && (
-            <select
-              value={currentPage}
-              onChange={(e) => paginate(Number(e.target.value))}
-              className="ml-2 text-sm border rounded px-2 py-1 border-[--skin-color]"
-            >
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  {index + 1}
-                </option>
-              ))}
-            </select>
-          )}
+          {/* Page Numbers */}
+          <div className="flex justify-center items-center space-x-4">
+            <span className="text-sm text-[--text-black-700]">
+              Page {currentPage} of {totalPages}
+            </span>
+            {totalPages > 5 && (
+              <select
+                value={currentPage}
+                onChange={(e) => paginate(Number(e.target.value))}
+                className="text-sm border rounded px-2 py-1 border-[--skin-color] bg-[--bg-black-100] text-[--text-black-900]"
+              >
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <option key={index + 1} value={index + 1}>
+                    Page {index + 1}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
       )}
     </section>
