@@ -80,8 +80,3 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* Ensure consistent card heights */
-.grid > div {
-  display: flex;
-}

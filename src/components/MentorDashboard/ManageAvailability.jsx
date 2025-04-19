@@ -7,12 +7,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { axiosInstance } from "../../utils/axios.js";
 import { ApiContext } from "../../Context/ContextProvider.jsx";
+import AvailabilityPopup from "./AvailabilityPopup.jsx";
 
 const ManageAvailability = () => {
   const { authUser: user } = useContext(ApiContext);
   const [loading, setLoading] = useState(false);
   const [startTime, setStartTime] = useState("10:00");
   const [endTime, setEndTime] = useState("17:00");
+  const [showAvailability, setShowAvailability] = useState(false);
 
   const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
@@ -92,9 +94,22 @@ const ManageAvailability = () => {
 
   return (
     <div className="p-4 md:p-6">
-      <h2 className="text-2xl font-bold mb-6 text-[--text-black-900]">
-        Manage Availability
-      </h2>
+      <div className="p-4 sm:p-5 md:p-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-[--text-black-900]">
+            Manage Availability
+          </h2>
+          <button
+            onClick={() => setShowAvailability(true)}
+            className="w-full sm:w-auto px-5 py-3 rounded-lg text-white font-medium bg-[--skin-color] hover:bg-purple-500 transition"
+          >
+            Availability Status
+          </button>
+        </div>
+      </div>
+      {showAvailability && (
+        <AvailabilityPopup onClose={() => setShowAvailability(false)} />
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Days Selection */}

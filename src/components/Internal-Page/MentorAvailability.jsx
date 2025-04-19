@@ -118,7 +118,10 @@ const MentorAvailability = () => {
       // Debug the payload before sending
       console.log("Sending session request:", payload);
 
-      const response = await axiosInstance.post("/connect/request", payload);
+      const response = await axiosInstance.post(
+        "/connect/request-session",
+        payload
+      );
 
       toast.success("Session request sent successfully!");
       setRequestMessage("");
