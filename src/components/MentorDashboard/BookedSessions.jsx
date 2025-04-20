@@ -76,6 +76,23 @@ const BookedSessions = () => {
     }
   };
 
+  // Handle status update
+  const handelConnect = async (sessionId) => {
+    setIsUpdating(true);
+    try {
+      const response = await axiosInstance.put("/connect/approve", {
+        sessionId,
+      });
+
+      toast.success("Appointment approved and created successfully");
+      fetchSessions();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to APPROVE Session");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   // handle cancellation of appointment
   const handleCancelSession = async (sessionId) => {
     try {
@@ -199,9 +216,7 @@ const BookedSessions = () => {
                     {session.status === "PENDING" && (
                       <div className="mt-3 flex space-x-2">
                         <button
-                          onClick={() =>
-                            handleSessionDecision(session._id, "APPROVED")
-                          }
+                          onClick={() => handelConnect(session._id)}
                           disabled={isUpdating}
                           className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-sm"
                         >

@@ -54,7 +54,7 @@ const Navbar = () => {
               to="/"
               className="text-2xl font-bold bg-gradient-to-r from-[var(--skin-color)] to-purple-600 bg-clip-text text-transparent"
             >
-              MENTPAT
+              MENTLINK
             </Link>
           </div>
 

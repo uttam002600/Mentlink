@@ -54,30 +54,6 @@ const Appointments = () => {
     }
   }, [selectedStatus, sessions]);
 
-  // Handle status update
-  const handleStatusUpdate = async (sessionId, newStatus) => {
-    setIsUpdating(true);
-    try {
-      const response = await axiosInstance.patch(
-        `/api/sessions/${sessionId}/status`,
-        { status: newStatus }
-      );
-
-      toast.success(`Session ${newStatus.toLowerCase()} successfully`);
-
-      // Update local state
-      setSessions(
-        sessions.map((session) =>
-          session._id === sessionId ? response.data.data : session
-        )
-      );
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update session");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   // handle cancellation of appointment
   const handleCancelSession = async (sessionId) => {
     try {
