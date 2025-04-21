@@ -11,30 +11,50 @@ const Register = ({ setAuthPage }) => {
     college: "",
     password: "",
     confirmPassword: "",
-    username: "", // New username field
-    otp: "", // New OTP field
+    username: "",
+    otp: "",
   });
 
   const { handleRegister, registerLoading } = useContext(ApiContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [usernameStatus, setUsernameStatus] = useState(""); // To hold username availability status
-  const [otpSent, setOtpSent] = useState(false); // To track if OTP has been sent
+  const [usernameStatus, setUsernameStatus] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+
+  // Handle OTP cooldown timer
+  useEffect(() => {
+    let timer;
+    if (otpCooldown && cooldownTime > 0) {
+      timer = setInterval(() => {
+        setCooldownTime((prev) => prev - 1);
+      }, 1000);
+    } else if (cooldownTime === 0) {
+      setOtpCooldown(false);
+    }
+    return () => clearInterval(timer);
+  }, [otpCooldown, cooldownTime]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
 
-    // Check username availability
+    // Validate username - no spaces allowed
     if (name === "username") {
+      if (/\s/.test(value)) {
+        return; // Don't update if space is entered
+      }
+      setFormData({ ...formData, [name]: value });
       checkUsernameAvailability(value);
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   };
 
   const checkUsernameAvailability = async (username) => {
     if (!username.trim()) {
-      setUsernameStatus("");
+      setUsernameStatus(""); // Clear status when empty
       return;
     }
 
@@ -56,6 +76,20 @@ const Register = ({ setAuthPage }) => {
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (otpCooldown) {
+      toast.error(
+        `Please wait ${cooldownTime} seconds before requesting another OTP.`
+      );
+      return;
+    }
+
     try {
       const response = await axiosInstance.post("/auth/send-otp", {
         email: formData.email,
@@ -63,6 +97,8 @@ const Register = ({ setAuthPage }) => {
 
       if (response.data.status === "success") {
         setOtpSent(true);
+        setOtpCooldown(true);
+        setCooldownTime(60); // 1 minute cooldown
         toast.success("OTP sent to your email!");
       } else {
         toast.error("Failed to send OTP.");
@@ -124,7 +160,7 @@ const Register = ({ setAuthPage }) => {
               className="block text-[var(--text-black-700)] mb-2"
               htmlFor="username"
             >
-              Username
+              Username (no spaces allowed)
             </label>
             <input
               type="text"
@@ -192,9 +228,14 @@ const Register = ({ setAuthPage }) => {
             <button
               type="button"
               onClick={handleGenerateOtp}
-              className="absolute right-2 top-2 bg-[var(--skin-color)] text-white py-1 px-2 rounded"
+              disabled={otpCooldown}
+              className={`absolute right-2 top-2 py-1 px-2 rounded ${
+                otpCooldown
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[var(--skin-color)] text-white hover:bg-opacity-80"
+              }`}
             >
-              Generate OTP
+              {otpCooldown ? `Wait ${cooldownTime}s` : "Generate OTP"}
             </button>
           </div>
 
