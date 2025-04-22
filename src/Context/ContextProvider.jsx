@@ -94,7 +94,6 @@ const ContextProvider = ({ children }) => {
       // 🔹 Update global auth context
       setAuthUser(user);
       setIsAuthenticated(true);
-      console.log(user);
 
       toast.success("Login successful!");
       navigate("/");
