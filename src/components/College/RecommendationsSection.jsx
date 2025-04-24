@@ -1,29 +1,89 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import MentorCard from "./MentorCard";
 import { UserContext } from "../../Context/userProvider";
 import LoadingSpinner from "../common/LoadingSpinner";
+import FilterComponent from "../common/FilterComponent";
+import { debounce } from "lodash";
+import { ApiContext } from "../../Context/ContextProvider";
 
 const RecommendationsSection = () => {
   const { mentors: users, mentorsLoading } = useContext(UserContext);
+  const { filterMentors, sortMentors } = useContext(ApiContext);
   const [currentPage, setCurrentPage] = useState(1);
   const [cardsPerPage, setCardsPerPage] = useState(4);
-  const [totalPages, setTotalPages] = useState(1);
+  const [filters, setFilters] = useState({});
+
+  // Filter configuration for the FilterComponent
+  const filterConfig = {
+    search: true,
+    mentorType: true,
+    categories: true,
+    college: true,
+    expertise: true,
+    yearsOfExperience: true, // for professors
+    batchPassout: true, // for alumni
+    currentYear: true, // for peer group
+    minRating: true,
+    // industryType: true,
+    // specialization: true,
+    // university: true,
+    // feeRange: true,
+    // ratings: true,
+    // availability: true,
+  };
 
   // Filter only mentor users with complete data
-  const mentors = users?.filter(
-    (user) => user.mentorDetails && user.mentorDetails.mentorType
+  const allMentors = useMemo(() => {
+    return (users || []).filter((user) => user?.mentorDetails?.mentorType);
+  }, [users]);
+
+  // Apply filters and sorting using context functions
+  const filteredMentors = useMemo(() => {
+    let result = allMentors;
+
+    if (Object.keys(filters).length > 0) {
+      result = filterMentors(result, filters);
+    }
+
+    if (filters.sortBy) {
+      result = sortMentors(result, filters.sortBy);
+    }
+
+    return result;
+  }, [allMentors, filters, filterMentors, sortMentors]);
+
+  // Debounced filter application
+  const debouncedApplyFilters = useMemo(
+    () =>
+      debounce((newFilters) => {
+        setFilters(newFilters);
+        setCurrentPage(1); // Reset to first page when filters change
+      }, 300),
+    []
   );
 
+  // Handle filter changes
+  const handleApplyFilters = (newFilters) => {
+    debouncedApplyFilters(newFilters);
+  };
+
+  // Handle filter reset
+  const handleResetFilters = () => {
+    setFilters({});
+    setCurrentPage(1);
+  };
+
+  // Responsive cards per page
   useEffect(() => {
     const updateCardsPerPage = () => {
       if (window.innerWidth < 640) {
-        setCardsPerPage(1); // Mobile - 1 column
+        setCardsPerPage(1);
       } else if (window.innerWidth < 768) {
-        setCardsPerPage(2); // Small tablet - 2 columns
+        setCardsPerPage(2);
       } else if (window.innerWidth < 1024) {
-        setCardsPerPage(3); // Tablet - 3 columns
+        setCardsPerPage(3);
       } else {
-        setCardsPerPage(4); // Desktop - 4 columns
+        setCardsPerPage(4);
       }
     };
 
@@ -32,29 +92,15 @@ const RecommendationsSection = () => {
     return () => window.removeEventListener("resize", updateCardsPerPage);
   }, []);
 
-  useEffect(() => {
-    if (mentors) {
-      setTotalPages(Math.ceil(mentors.length / cardsPerPage));
-    }
-  }, [mentors, cardsPerPage]);
-
-  if (mentorsLoading) return <LoadingSpinner />;
-  if (!mentors || mentors.length === 0)
-    return (
-      <section className="my-8 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-[--text-black-900] mb-6">
-          Recommended Mentors
-        </h2>
-        <div className="text-center py-12 text-[--text-black-700]">
-          No mentors found matching your criteria
-        </div>
-      </section>
-    );
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredMentors.length / cardsPerPage);
 
   // Get current cards
-  const indexOfLastCard = currentPage * cardsPerPage;
-  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = mentors.slice(indexOfFirstCard, indexOfLastCard);
+  const currentCards = useMemo(() => {
+    const indexOfLastCard = currentPage * cardsPerPage;
+    const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+    return filteredMentors.slice(indexOfFirstCard, indexOfLastCard);
+  }, [currentPage, cardsPerPage, filteredMentors]);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -62,34 +108,63 @@ const RecommendationsSection = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
+  if (mentorsLoading) return <LoadingSpinner />;
+
   return (
     <section className="my-8 px-4 sm:px-6 lg:px-8 relative">
-      <h2 className="text-2xl font-bold text-[--text-black-900] mb-6">
-        Recommended Mentors
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-[--text-black-900]">
+          Recommended Mentors
+        </h2>
+      </div>
 
-      <div className="relative">
-        {/* Cards Grid */}
-        <div
-          className={`grid gap-6 ${
-            cardsPerPage === 1
-              ? "grid-cols-1"
-              : cardsPerPage === 2
-              ? "grid-cols-2"
-              : cardsPerPage === 3
-              ? "grid-cols-3"
-              : "grid-cols-4"
-          }`}
-        >
-          {currentCards.map((mentor) => (
-            <div key={mentor._id} className="w-full h-full min-h-[400px]">
-              <MentorCard user={mentor} />
-            </div>
-          ))}
+      <FilterComponent
+        config={filterConfig}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
+      {/* Results Count */}
+      <div className="text-sm text-[--text-black-700] mb-4">
+        Showing{" "}
+        {filteredMentors.length === 0
+          ? 0
+          : (currentPage - 1) * cardsPerPage + 1}
+        -{Math.min(currentPage * cardsPerPage, filteredMentors.length)} of{" "}
+        {filteredMentors.length} mentors
+      </div>
+
+      {/* No Results Message */}
+      {filteredMentors.length === 0 && !mentorsLoading && (
+        <div className="text-center py-12 text-[--text-black-700]">
+          No mentors found matching your criteria
         </div>
+      )}
+
+      {/* Cards Grid */}
+      <div className="relative">
+        {filteredMentors.length > 0 && (
+          <div
+            className={`grid gap-6 ${
+              cardsPerPage === 1
+                ? "grid-cols-1"
+                : cardsPerPage === 2
+                ? "grid-cols-2"
+                : cardsPerPage === 3
+                ? "grid-cols-3"
+                : "grid-cols-4"
+            }`}
+          >
+            {currentCards.map((mentor) => (
+              <div key={mentor._id} className="w-full h-full min-h-[400px]">
+                <MentorCard user={mentor} />
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Navigation Buttons */}
-        {mentors.length > cardsPerPage && (
+        {filteredMentors.length > cardsPerPage && (
           <>
             <button
               onClick={prevPage}
@@ -118,7 +193,7 @@ const RecommendationsSection = () => {
       </div>
 
       {/* Pagination Controls */}
-      {mentors.length > cardsPerPage && (
+      {filteredMentors.length > cardsPerPage && (
         <div className="mt-8">
           {/* Pagination Dots */}
           <div className="flex justify-center space-x-2 mb-2">

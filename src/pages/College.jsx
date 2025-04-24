@@ -16,7 +16,7 @@ const College = () => {
   useEffect(() => {
     setCollegeFilterConfig((prevConfig) => ({
       ...prevConfig,
-      industryType: false,
+      industryType: true,
       mentorType: true,
       feeRange: false,
       university: true,
@@ -56,11 +56,6 @@ const College = () => {
 
   return (
     <>
-      <FilterComponent
-        config={collegeFilterConfig}
-        onApply={handleApplyFilters}
-        onReset={handleResetFilters}
-      />
       <CategorySelector />
       <Carousel slides={slides} />
       {mentorsLoading ? (

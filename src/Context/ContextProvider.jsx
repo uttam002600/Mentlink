@@ -151,6 +151,159 @@ const ContextProvider = ({ children }) => {
     return await getRecommendations(menteeId);
   };
 
+  // Filter function updated for your schema
+  const filterMentors = (mentors, filters) => {
+    return mentors.filter((mentor) => {
+      // Only filter mentor users
+      if (mentor.role !== "MENTOR") return false;
+
+      // Search filter - searches name, username, and expertiseDomains
+      if (filters.search) {
+        const query = filters.search.toLowerCase();
+        const name = mentor.fullName?.toLowerCase() || "";
+        const username = mentor.username?.toLowerCase() || "";
+        const expertiseDomains = mentor.expertiseDomains || [];
+
+        if (
+          !name.includes(query) &&
+          !username.includes(query) &&
+          !expertiseDomains.some((domain) =>
+            domain?.toLowerCase().includes(query)
+          )
+        ) {
+          return false;
+        }
+      }
+
+      // Mentor Type filter
+      if (
+        filters.mentorType &&
+        mentor.mentorDetails?.mentorType !== filters.mentorType.toUpperCase()
+      ) {
+        return false;
+      }
+
+      // Mentorship Categories filter (multiple select)
+      if (filters.categories && filters.categories.length > 0) {
+        const mentorCategories = mentor.mentorshipCategories || [];
+        if (
+          !filters.categories.some((category) =>
+            mentorCategories.includes(category)
+          )
+        ) {
+          return false;
+        }
+      }
+
+      // College filter
+      if (filters.college && mentor.college !== filters.college) {
+        return false;
+      }
+
+      // Expertise Domains filter (multiple select)
+      if (filters.expertise && filters.expertise.length > 0) {
+        const mentorExpertise = mentor.expertiseDomains || [];
+        if (!filters.expertise.some((exp) => mentorExpertise.includes(exp))) {
+          return false;
+        }
+      }
+
+      // Professor-specific filters
+      if (filters.yearsOfExperience && mentor.mentorDetails?.professorDetails) {
+        if (
+          mentor.mentorDetails.professorDetails.yearsOfExperience <
+          filters.yearsOfExperience
+        ) {
+          return false;
+        }
+      }
+
+      // Alumni-specific filters
+      if (filters.batchPassout && mentor.mentorDetails?.alumniDetails) {
+        if (
+          mentor.mentorDetails.alumniDetails.batchPassout > filters.batchPassout
+        ) {
+          return false;
+        }
+      }
+
+      // Peer Group-specific filters
+      if (filters.currentYear && mentor.mentorDetails?.peerGroupDetails) {
+        if (
+          mentor.mentorDetails.peerGroupDetails.currentYear !==
+          filters.currentYear
+        ) {
+          return false;
+        }
+      }
+
+      // Average Rating filter (calculated from ratings array)
+      if (filters.minRating) {
+        const ratings = mentor.mentorDetails?.ratings || [];
+        const averageRating =
+          ratings.length > 0
+            ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+            : 0;
+        if (averageRating < parseFloat(filters.minRating)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  // Updated sorting function for your schema
+  const sortMentors = (mentors, sortBy) => {
+    if (!sortBy) return mentors;
+
+    const sorted = [...mentors];
+    switch (sortBy) {
+      case "rating-desc":
+        return sorted.sort((a, b) => {
+          const aRatings = a.mentorDetails?.ratings || [];
+          const bRatings = b.mentorDetails?.ratings || [];
+          const aAvg = aRatings.length
+            ? aRatings.reduce((sum, r) => sum + r.rating, 0) / aRatings.length
+            : 0;
+          const bAvg = bRatings.length
+            ? bRatings.reduce((sum, r) => sum + r.rating, 0) / bRatings.length
+            : 0;
+          return bAvg - aAvg;
+        });
+      case "rating-asc":
+        return sorted.sort((a, b) => {
+          const aRatings = a.mentorDetails?.ratings || [];
+          const bRatings = b.mentorDetails?.ratings || [];
+          const aAvg = aRatings.length
+            ? aRatings.reduce((sum, r) => sum + r.rating, 0) / aRatings.length
+            : 0;
+          const bAvg = bRatings.length
+            ? bRatings.reduce((sum, r) => sum + r.rating, 0) / bRatings.length
+            : 0;
+          return aAvg - bAvg;
+        });
+      case "experience-desc":
+        return sorted.sort((a, b) => {
+          const aExp =
+            a.mentorDetails?.professorDetails?.yearsOfExperience || 0;
+          const bExp =
+            b.mentorDetails?.professorDetails?.yearsOfExperience || 0;
+          return bExp - aExp;
+        });
+      case "experience-asc":
+        return sorted.sort((a, b) => {
+          const aExp =
+            a.mentorDetails?.professorDetails?.yearsOfExperience || 0;
+          const bExp =
+            b.mentorDetails?.professorDetails?.yearsOfExperience || 0;
+          return aExp - bExp;
+        });
+      default:
+        return mentors;
+    }
+  };
+
   // Dynamic filtering of content
   const [collegeFilterConfig, setCollegeFilterConfig] = useState(null);
 
@@ -187,6 +340,8 @@ const ContextProvider = ({ children }) => {
         handleLogOut,
         handleRegister,
         getMentorRecommendations,
+        filterMentors,
+        sortMentors,
         theme,
         toggleTheme,
         collegeFilterConfig,
