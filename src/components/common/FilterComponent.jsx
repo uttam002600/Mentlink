@@ -7,6 +7,7 @@ const FilterComponent = ({ config, onApply, onReset }) => {
   const [feeRange, setFeeRange] = useState({ min: 0, max: 500 });
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { authUser } = useContext(ApiContext);
 
   // Load saved filters from localStorage
   useEffect(() => {
@@ -63,10 +64,24 @@ const FilterComponent = ({ config, onApply, onReset }) => {
   return (
     <div className="bg-[var(--bg-black-100)] text-[var(--text-black-900)] p-4 rounded shadow-lg">
       {/* Horizontal Bar with Open Filter Button */}
-      <div className="flex items-center justify-between border-b-2 border-[var(--bg-black-50)] pb-4 mb-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-[var(--bg-black-50)] pb-4 mb-4 gap-2">
+        {/* Welcome message - appears first on mobile, right on desktop */}
+        <div className="order-1 md:order-2 w-full md:w-auto text-center md:text-right">
+          {authUser ? (
+            <span className=" bg-opacity-20 bg-[var(--skin-color)] text-[var(--text-vlack-100)] px-3 py-1 rounded-full font-bold text-sm md:text-base ">
+              Welcome, {authUser.fullName}
+            </span>
+          ) : (
+            <span className=" bg-[var(--skin-color)] text-[var(--text-vlack-100)] px-3 py-1 rounded-full font-medium text-sm md:text-base">
+              Login to connect
+            </span>
+          )}
+        </div>
+
+        {/* Filter button - appears second on mobile, left on desktop */}
         <button
           onClick={toggleFilterSection}
-          className="text-[var(--skin-color)] font-semibold flex items-center space-x-2"
+          className="order-2 md:order-1 text-[var(--skin-color)] font-semibold flex items-center space-x-2"
         >
           <span>{isOpen ? "Close Filters" : "Open Filters"}</span>
           <svg
