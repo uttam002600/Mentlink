@@ -120,7 +120,7 @@ const Register = ({ setAuthPage }) => {
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-black-900)] p-4">
       <div className="bg-[var(--bg-black-100)] rounded-lg shadow-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-[var(--text-black-900)] mb-6 text-center">
-          Register
+          Register - Check otp on spam
         </h2>
         <p className="text-center mb-4">
           Already a user?{" "}
