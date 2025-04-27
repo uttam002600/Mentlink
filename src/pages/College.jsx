@@ -59,7 +59,7 @@ const College = () => {
       <CategorySelector />
       <Carousel slides={slides} />
       {mentorsLoading ? (
-        <LoadingSpinner label="Loading Mentors" />
+        <LoadingSpinner label="Loading Mentors- Free Server might take 50 sec to load😅" />
       ) : (
         <RecommendationsSection />
       )}
